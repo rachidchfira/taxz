@@ -1,0 +1,443 @@
+// Premium PIT Finalization Platform for Foreigners in Vietnam
+// Production-grade database schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// USER & AUTHENTICATION
+// ============================================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String?
+  name          String?
+  phone         String?
+  role          String   @default("client") // client, admin, reviewer
+  mfaEnabled    Boolean  @default(false)
+  emailVerified DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  clients       Client[]
+  auditEvents   AuditEvent[]
+  leads         Lead[]
+  
+  @@map("users")
+}
+
+// ============================================
+// CLIENT MANAGEMENT
+// ============================================
+
+model Client {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  
+  // Personal Information
+  fullName        String
+  nationality     String?
+  passportNo      String?
+  taxId           String?  // Vietnam Tax ID
+  dateOfBirth     DateTime?
+  vnAddress       String?
+  
+  // Consent & Privacy
+  consentVersion  String?
+  consentDate     DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  cases           Case[]
+  documents       Document[]
+  
+  @@map("clients")
+}
+
+// ============================================
+// CASE MANAGEMENT
+// ============================================
+
+model Case {
+  id              String   @id @default(cuid())
+  clientId        String
+  client          Client   @relation(fields: [clientId], references: [id])
+  
+  // Case Details
+  taxYear         Int
+  status          String   @default("draft") // draft, submitted, under_review, completed, filed
+  serviceTier     String?  // basic, standard, premium, consultation
+  
+  // Residency Information
+  residencyStatus String?  // resident, non_resident, undetermined
+  
+  // Dates
+  submittedAt     DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  employers       Employer[]
+  dependants      Dependant[]
+  calculations    Calculation[]
+  filings         Filing[]
+  residencyPeriods ResidencyPeriod[]
+  auditEvents     AuditEvent[]
+  
+  @@map("cases")
+}
+
+// ============================================
+// RESIDENCY TRACKING
+// ============================================
+
+model ResidencyPeriod {
+  id                  String   @id @default(cuid())
+  caseId              String
+  case                Case     @relation(fields: [caseId], references: [id])
+  
+  arrivalDate         DateTime?
+  departureDate       DateTime?
+  daysInVietnam       Int?
+  regularResidence    Boolean  @default(false)
+  residencyResult     String?  // resident, non_resident
+  evidenceDocId       String?
+  
+  createdAt           DateTime @default(now())
+  
+  @@map("residency_periods")
+}
+
+// ============================================
+// EMPLOYER & PAYROLL
+// ============================================
+
+model Employer {
+  id              String   @id @default(cuid())
+  caseId          String
+  case            Case     @relation(fields: [caseId], references: [id])
+  
+  name            String
+  taxCode         String?
+  address         String?
+  employmentType  String?  // primary, secondary
+  contractStart   DateTime?
+  contractEnd     DateTime?
+  
+  createdAt       DateTime @default(now())
+  
+  payrollMonths   PayrollMonth[]
+  
+  @@map("employers")
+}
+
+model PayrollMonth {
+  id                    String   @id @default(cuid())
+  employerId            String
+  employer              Employer @relation(fields: [employerId], references: [id])
+  
+  month                 Int      // 1-12
+  year                  Int
+  
+  grossIncome           Float
+  taxableIncome         Float?
+  pitWithheld           Float
+  siBase                Float?   // Social Insurance base
+  employeeSI            Float?   // Employee Social Insurance
+  employeeHI            Float?   // Employee Health Insurance
+  
+  createdAt             DateTime @default(now())
+  
+  @@unique([employerId, month, year])
+  @@map("payroll_months")
+}
+
+// ============================================
+// DEPENDANTS
+// ============================================
+
+model Dependant {
+  id              String   @id @default(cuid())
+  caseId          String
+  case            Case     @relation(fields: [caseId], references: [id])
+  
+  fullName        String
+  relation        String   // spouse, child, parent
+  idNumber        String?
+  dateOfBirth     DateTime?
+  startMonth      Int?
+  endMonth        Int?
+  isActive        Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("dependants")
+}
+
+// ============================================
+// TAX RULES & RATE TABLES (Versioned)
+// ============================================
+
+model Ruleset {
+  id              String   @id @default(cuid())
+  name            String
+  effectiveFrom   DateTime
+  effectiveTo     DateTime?
+  sourceCitation  String?
+  description     String?
+  
+  createdAt       DateTime @default(now())
+  
+  rateTables      RateTable[]
+  calculations    Calculation[]
+  
+  @@map("rulesets")
+}
+
+model RateTable {
+  id              String   @id @default(cuid())
+  rulesetId       String
+  ruleset         Ruleset @relation(fields: [rulesetId], references: [id])
+  
+  type            String   // pit_brackets, deductions, insurance_rates
+  data            String   // JSON blob with rate data
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("rate_tables")
+}
+
+// ============================================
+// CALCULATIONS (Reproducible)
+// ============================================
+
+model Calculation {
+  id              String   @id @default(cuid())
+  caseId          String
+  case            Case     @relation(fields: [caseId], references: [id])
+  rulesetId       String?
+  ruleset         Ruleset? @relation(fields: [rulesetId], references: [id])
+  
+  // Inputs snapshot (JSON)
+  inputsSnapshot  String
+  
+  // Outputs snapshot (JSON)
+  outputsSnapshot String
+  
+  // Key results
+  totalIncome     Float?
+  totalDeductions Float?
+  totalTaxLiability Float?
+  taxWithheld     Float?
+  balanceDue      Float?
+  refundAmount    Float?
+  
+  // Verification
+  calcHash        String?  // For reproducibility verification
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("calculations")
+}
+
+// ============================================
+// FILINGS
+// ============================================
+
+model Filing {
+  id              String   @id @default(cuid())
+  caseId          String
+  case            Case     @relation(fields: [caseId], references: [id])
+  
+  formCode        String   // e.g., 02/QTT-TNCN
+  status          String   // pending, submitted, accepted, rejected
+  submittedChannel String? // etax, manual, agent
+  submissionReceipt String?
+  submittedAt     DateTime?
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("filings")
+}
+
+// ============================================
+// DOCUMENTS
+// ============================================
+
+model Document {
+  id              String   @id @default(cuid())
+  clientId        String?
+  client          Client?  @relation(fields: [clientId], references: [id])
+  caseId          String?
+  
+  type            String   // passport, contract, payslip, withholding_cert, residence_cert
+  fileName        String
+  originalName    String?
+  mimeType        String?
+  size            Int?
+  storageUri      String
+  checksum        String?
+  
+  uploadedAt      DateTime @default(now())
+  
+  @@map("documents")
+}
+
+// ============================================
+// KNOWLEDGE BASE
+// ============================================
+
+model KnowledgeArticle {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  
+  title           String
+  shortAnswer     String
+  content         String   // Markdown content
+  
+  category        String   // residency, rates, deductions, insurance, forms, deadlines
+  audience        String?  // employee, multi_employer, leaving_vn
+  
+  // Legal basis
+  legalBasis      String?
+  sourceUrl       String?
+  sourceName      String?
+  effectiveDate   DateTime?
+  
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("knowledge_articles")
+}
+
+model LegalSource {
+  id              String   @id @default(cuid())
+  
+  name            String
+  citation        String   // Official citation
+  sourceUrl       String?
+  sourceDomain    String?  // vbpl.vn, gdt.gov.vn, etc.
+  effectiveDate   DateTime?
+  expiryDate      DateTime?
+  category        String?
+  description     String?
+  
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  
+  @@map("legal_sources")
+}
+
+// ============================================
+// LEAD CAPTURE
+// ============================================
+
+model Lead {
+  id              String   @id @default(cuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  
+  name            String
+  email           String
+  phone           String?
+  company         String?
+  
+  // Lead source
+  source          String?  // calculator, consultation_form, knowledge_base
+  interest        String?  // pit_finalization, residency_check, refund_review
+  
+  // Calculator data snapshot
+  calculatorData  String?  // JSON
+  
+  status          String   @default("new") // new, contacted, qualified, converted, lost
+  notes           String?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@map("leads")
+}
+
+// ============================================
+// AUDIT LOG
+// ============================================
+
+model AuditEvent {
+  id              String   @id @default(cuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id])
+  caseId          String?
+  case            Case?    @relation(fields: [caseId], references: [id])
+  
+  action          String   // create, update, delete, view, calculate, submit
+  entityType      String   // case, calculation, document, filing
+  entityId        String?
+  ipAddress       String?
+  userAgent       String?
+  metadata        String?  // JSON
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("audit_events")
+}
+
+// ============================================
+// TESTIMONIALS (for trust building)
+// ============================================
+
+model Testimonial {
+  id              String   @id @default(cuid())
+  
+  clientName      String
+  clientTitle     String?  // Job title, nationality
+  clientCompany   String?
+  content         String
+  rating          Int?     // 1-5
+  
+  isVerified      Boolean  @default(false)
+  isPublished     Boolean  @default(false)
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("testimonials")
+}
+
+// ============================================
+// PRICING TIERS
+// ============================================
+
+model PricingTier {
+  id              String   @id @default(cuid())
+  
+  name            String
+  slug            String   @unique
+  description     String?
+  priceVND        Int
+  priceUSD        Float?
+  
+  features        String   // JSON array of features
+  isPopular       Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  sortOrder       Int      @default(0)
+  
+  createdAt       DateTime @default(now())
+  
+  @@map("pricing_tiers")
+}
