@@ -1,12 +1,16 @@
 'use client'
 
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
-import { 
-  ClipboardCheck, 
-  Calculator, 
-  FileSearch, 
+import { Button } from '@/components/ui/button'
+import {
+  ClipboardCheck,
+  Calculator,
+  FileSearch,
   Send,
-  ArrowRight
+  ArrowRight,
+  Clock,
+  ChevronRight
 } from 'lucide-react'
 
 const steps = [
@@ -24,8 +28,8 @@ const steps = [
   {
     number: '02',
     icon: Calculator,
-    title: 'We Calculate & Analyze',
-    description: 'Our experts review your data, determine residency status, and calculate your exact tax position using official rules.',
+    title: 'We Find Hidden Deductions',
+    description: 'Our experts review your data, determine residency status, and identify every deduction you qualify for — averaging 3.2M VND extra per client.',
     details: [
       'Residency determination',
       'Income aggregation',
@@ -63,15 +67,33 @@ export function HowItWorksSection() {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
           <Badge variant="outline" className="mb-4">
-            How It Works
+            Simple 4-Step Process
           </Badge>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Simple, Transparent Process
+            From Documents to Refund — 8 Days
           </h2>
           <p className="text-lg text-muted-foreground">
-            From document submission to filed return — we handle the complexity 
-            while you stay informed every step of the way.
+            You upload 3 documents. We handle all calculations, filings, and communications with the tax authority.
           </p>
+        </div>
+
+        {/* Timeline badge */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#40E0D0]/10 border border-[#40E0D0]/20 text-sm text-[#40E0D0]">
+            <Clock className="w-4 h-4" />
+            Average 8 days from documents to filed return
+          </div>
+        </div>
+
+        {/* Security Callout */}
+        <div className="flex justify-center mb-4">
+          <div className="inline-flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1"><span className="text-green-500">🔒</span> 256-bit SSL encryption</span>
+            <span className="text-border">|</span>
+            <span className="flex items-center gap-1"><span className="text-green-500">✓</span> Documents deleted after filing</span>
+            <span className="text-border">|</span>
+            <span className="flex items-center gap-1"><span className="text-green-500">✓</span> PDP Decree compliant</span>
+          </div>
         </div>
 
         {/* Steps */}
@@ -83,7 +105,7 @@ export function HowItWorksSection() {
             {steps.map((step, index) => (
               <div key={step.number} className="relative">
                 {/* Step Card */}
-                <div className="bg-card rounded-xl border border-border/50 p-6 h-full hover:shadow-lg transition-shadow">
+                <div className={`bg-card rounded-xl border border-border/50 p-6 h-full hover:shadow-lg transition-shadow${step.number === '02' ? ' ring-2 ring-[#40E0D0]/30 shadow-lg shadow-[#40E0D0]/10' : ''}`}>
                   {/* Step Number */}
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
@@ -99,6 +121,13 @@ export function HowItWorksSection() {
                   <p className="text-sm text-muted-foreground mb-4">
                     {step.description}
                   </p>
+
+                  {step.number === '02' && (
+                    <div className="mt-3 px-3 py-2 rounded-lg bg-[#40E0D0]/10 border border-[#40E0D0]/20">
+                      <p className="text-xs font-semibold text-[#40E0D0]">Avg. 3.2M VND extra recovered</p>
+                      <p className="text-xs text-muted-foreground">vs. self-filing or employer filing</p>
+                    </div>
+                  )}
 
                   {/* Details */}
                   <ul className="space-y-1.5">
@@ -120,6 +149,15 @@ export function HowItWorksSection() {
               </div>
             ))}
           </div>
+        </div>
+        {/* CTA */}
+        <div className="mt-12 text-center">
+          <p className="text-muted-foreground mb-4 text-sm">You provide 3 documents — we handle the rest.</p>
+          <Button asChild className="bg-[#1E3A8A] hover:bg-[#1E3A8A]/90 text-white px-8">
+            <Link href="/contact">
+              Upload Documents & Get Free Estimate <ChevronRight className="w-4 h-4 ml-1" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

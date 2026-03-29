@@ -3670,6 +3670,832 @@ Our team can:
 *This article is based on PIT Law and Circular 111/2013/TT-BTC. For official regulations, please refer to [vbpl.vn](https://vbpl.vn).*
     `,
   },
+  {
+    id: 16,
+    slug: 'vietnam-pit-complete-guide-expats-2025-2026',
+    title: 'Vietnam Personal Income Tax: Complete Guide for Expats (2025–2026)',
+    excerpt: 'Everything foreign employees need to know about Vietnam PIT — residency rules, 2026 bracket changes, deductions, non-taxable benefits, and double taxation treaties.',
+    category: 'Tax Rates & Brackets',
+    readTime: '14 min read',
+    featured: true,
+    source: 'PIT Law (Law No. 2025/QH15), Circular 111/2013/TT-BTC, PwC Vietnam Tax Summaries',
+    lastUpdated: '2026-03-01',
+    tableOfContents: [
+      { title: 'Tax Residency Overview', anchor: 'tax-residency-overview' },
+      { title: '2025 Tax Brackets (7-Bracket System)', anchor: '2025-tax-brackets' },
+      { title: '2026 Tax Brackets (New 5-Bracket System)', anchor: '2026-tax-brackets' },
+      { title: 'Personal & Dependant Deductions', anchor: 'deductions' },
+      { title: 'Non-Taxable Income & Benefits', anchor: 'non-taxable-income' },
+      { title: 'Non-Resident Rules', anchor: 'non-resident-rules' },
+      { title: 'Double Taxation Agreements', anchor: 'double-taxation-agreements' },
+      { title: 'Real-World Examples', anchor: 'real-world-examples' },
+    ],
+    content: `
+## Tax Residency Overview {#tax-residency-overview}
+
+Vietnam's PIT system treats you differently based on whether you are a **tax resident** or **non-resident**. This single determination affects your tax rates, available deductions, and filing obligations.
+
+**You are a tax resident if:**
+- You are present in Vietnam for **183 days or more** within a calendar year (Jan 1–Dec 31), OR within any 12 consecutive months from your first arrival date; OR
+- You maintain a **regular residence** — either a registered permanent residence or a rental lease of 183+ days during the tax year.
+
+**Non-residents** pay a flat 20% on Vietnam-sourced income only, with no deductions available.
+
+> **Practical tip:** Day counts include both arrival and departure days. Keep a travel log and your passport stamped entries — tax authorities use these during finalization.
+
+---
+
+## 2025 Tax Brackets (7-Bracket Progressive System) {#2025-tax-brackets}
+
+For income earned **until December 31, 2025**, the seven-bracket progressive system applies to tax residents:
+
+| Monthly Taxable Income (VND) | Annual Taxable Income (VND) | Rate |
+|---|---|---|
+| Up to 5,000,000 | Up to 60,000,000 | **5%** |
+| 5,000,001 – 10,000,000 | 60M – 120M | **10%** |
+| 10,000,001 – 18,000,000 | 120M – 216M | **15%** |
+| 18,000,001 – 32,000,000 | 216M – 384M | **20%** |
+| 32,000,001 – 52,000,000 | 384M – 624M | **25%** |
+| 52,000,001 – 80,000,000 | 624M – 960M | **30%** |
+| Over 80,000,000 | Over 960,000,000 | **35%** |
+
+*Taxable income = Assessable income − Insurance contributions − Personal deduction − Dependant deductions*
+
+---
+
+## 2026 Tax Brackets (New 5-Bracket System) {#2026-tax-brackets}
+
+Vietnam's National Assembly passed a landmark PIT reform in December 2025. The new 5-bracket system applies to **salary and wage income from January 1, 2026**:
+
+| Monthly Taxable Income (VND) | Annual Taxable Income (VND) | Rate |
+|---|---|---|
+| Up to 10,000,000 | Up to 120,000,000 | **5%** |
+| 10,000,001 – 30,000,000 | 120M – 360M | **10%** |
+| 30,000,001 – 60,000,000 | 360M – 720M | **20%** |
+| 60,000,001 – 100,000,000 | 720M – 1,200M | **30%** |
+| Over 100,000,000 | Over 1,200,000,000 | **35%** |
+
+**Key changes vs 2025:**
+- Bracket 2 rate reduced from 15% → **10%**
+- Bracket 3 rate reduced from 25% → **20%**
+- Top bracket threshold raised from VND 80M → **VND 100M/month**
+- Middle-income earners benefit the most from these changes
+
+**Impact example:** A resident earning VND 50M/month (no dependants) sees monthly PIT drop from approximately VND 6.85M → VND 4.75M — a saving of over VND 2.1M per month.
+
+---
+
+## Personal & Dependant Deductions {#deductions}
+
+Deductions reduce your **assessable income** before tax brackets are applied. These are available only to **tax residents**.
+
+| Deduction | 2025 | 2026 (from Jan 1) |
+|---|---|---|
+| Personal (taxpayer) | **11,000,000 VND/month** | **15,500,000 VND/month** |
+| Each qualifying dependant | **4,400,000 VND/month** | **6,200,000 VND/month** |
+
+**Tax-free income thresholds (2026):**
+- Single, no dependants: VND 17,000,000/month (15.5M personal + no tax on first 1.5M)
+- With 1 dependant: VND ~23,200,000/month
+- With 2 dependants: VND ~29,400,000/month
+
+**Who qualifies as a dependant?**
+- Children under 18 years old
+- Children 18+ who are enrolled in university with income below VND 1,000,000/month
+- Spouses, parents, or other relatives who are unable to work and have income below VND 1,000,000/month
+
+Dependants must be **registered** with the tax authority. Required documents include birth certificates, school enrollment letters (for children), and medical certificates (for disabled dependants).
+
+**Also deductible from assessable income:**
+- Your own compulsory social insurance contributions (SI, HI)
+- Approved charitable donations (with receipts from registered organisations)
+
+---
+
+## Non-Taxable Income & Benefits {#non-taxable-income}
+
+Vietnam's PIT Law exempts many common expat benefits from tax — but documentation is essential:
+
+| Benefit | Exemption Condition |
+|---|---|
+| Round-trip airfare to home country | One trip per year, employer paid |
+| Relocation allowance | One-time, moving to/from Vietnam |
+| School fees (K–12 only) | Paid directly by employer, not to employee |
+| Housing allowance | **Taxable**, but capped at 15% of other assessable income |
+| Meal allowance | Exempt up to **VND 730,000/month**; above this is taxable |
+| Uniform allowance (cash) | Exempt up to **VND 5,000,000/year** |
+| Overtime/nightshift premium | Fully exempt |
+| Employer statutory insurance contributions | Not a taxable benefit to employee |
+| Business travel and per diem | Exempt if within approved limits |
+
+> **2026 addition:** Foreign experts working on ODA-funded projects are fully PIT-exempt. Qualified digital technology, AI, and semiconductor professionals receive a **5-year PIT exemption** on wages.
+
+---
+
+## Non-Resident Rules {#non-resident-rules}
+
+If you spend fewer than 183 days in Vietnam and do not maintain a regular residence:
+
+- **Employment income:** flat **20%** on all Vietnam-sourced income
+- **No deductions** available (personal or dependant)
+- **No annual finalization** required
+- Tax withheld monthly by employer is final
+
+**Other non-resident rates:**
+- Dividends, interest, royalties: 5%
+- Real estate sales: 2% of transaction value
+- Capital gains on shares: 0.1% of gross proceeds
+- Prizes and inheritances: 10%
+
+---
+
+## Double Taxation Agreements {#double-taxation-agreements}
+
+Vietnam has signed DTAs with **over 80 countries**, including the UK, France, Germany, Japan, South Korea, Australia, Singapore, and most ASEAN nations. DTAs can reduce or eliminate double taxation on the same income.
+
+**Important:** The USA has **no DTA with Vietnam**. US expats must rely on the Foreign Tax Credit (Form 1116) or Foreign Earned Income Exclusion (Form 2555) to avoid double taxation, and must still file US tax returns regardless of income level.
+
+**To claim DTA benefits:**
+1. Obtain a **Certificate of Tax Residency** from your home country's tax authority
+2. Submit to your Vietnamese employer and the local tax authority **at least 15 days before the tax payment deadline**
+3. Late claims can be filed retroactively up to **3 years** from the original due date
+
+DTA relief is never automatic — it requires proper documentation and timely notification.
+
+---
+
+## Real-World Examples {#real-world-examples}
+
+### Example 1: Foreign Tax Resident, VND 60,000,000 Gross, 1 Dependant (2026)
+
+| Step | Amount (VND) |
+|---|---|
+| Gross salary | 60,000,000 |
+| Employee SI (8% × 46,800,000 cap) | −3,744,000 |
+| Employee HI (1.5% × 46,800,000 cap) | −702,000 |
+| Personal deduction | −15,500,000 |
+| Dependant deduction (1 child) | −6,200,000 |
+| **Taxable income** | **33,854,000** |
+| PIT: 5% × 10M | 500,000 |
+| PIT: 10% × 20M | 2,000,000 |
+| PIT: 20% × 3,854,000 | 770,800 |
+| **Total PIT** | **3,270,800** |
+| **Net salary** | **52,283,200** |
+
+### Example 2: Non-Resident, VND 60,000,000 Gross
+
+| Step | Amount (VND) |
+|---|---|
+| Gross salary | 60,000,000 |
+| PIT (20% flat) | −12,000,000 |
+| **Net salary** | **48,000,000** |
+
+*Non-residents pay significantly more tax at higher income levels — another reason to track your days carefully.*
+
+---
+
+*Sources: PIT Law (Law No. 2025/QH15), Circular 111/2013/TT-BTC, PwC Vietnam Individual Tax Summaries, Acclime Vietnam, Vietnam Briefing. For official regulations: [vbpl.vn](https://vbpl.vn) and [gdt.gov.vn](https://gdt.gov.vn).*
+    `,
+  },
+  {
+    id: 17,
+    slug: 'gross-to-net-salary-calculation-vietnam',
+    title: 'Gross to Net Salary Calculation in Vietnam: Step-by-Step Guide (2026)',
+    excerpt: 'Learn exactly how to calculate your take-home pay in Vietnam — including social insurance caps, PIT brackets, employer costs, and worked examples for foreigners and Vietnamese employees.',
+    category: 'Practical Guides',
+    readTime: '11 min read',
+    featured: true,
+    source: 'Circular 111/2013/TT-BTC, Social Insurance Law No. 41/2024/QH15',
+    lastUpdated: '2026-03-01',
+    tableOfContents: [
+      { title: 'The Gross-to-Net Formula', anchor: 'gross-to-net-formula' },
+      { title: 'Step 1: Calculate Insurance Contributions', anchor: 'step1-insurance' },
+      { title: 'Step 2: Calculate Assessable Income', anchor: 'step2-assessable' },
+      { title: 'Step 3: Apply PIT Brackets', anchor: 'step3-pit' },
+      { title: 'Step 4: Your Net Salary', anchor: 'step4-net' },
+      { title: 'Employer Cost Calculation', anchor: 'employer-costs' },
+      { title: 'Worked Examples', anchor: 'worked-examples' },
+      { title: 'Net-to-Gross (Reverse Calculation)', anchor: 'net-to-gross' },
+    ],
+    content: `
+## The Gross-to-Net Formula {#gross-to-net-formula}
+
+Calculating your take-home pay in Vietnam involves three main deductions from your gross salary:
+
+**Net Salary = Gross Salary − Employee Insurance Contributions − Personal Income Tax**
+
+**Employer Total Cost = Gross Salary + Employer Insurance Contributions + Trade Union Fund**
+
+The calculation differs slightly for **Vietnamese employees** vs **foreign employees** (mainly regarding unemployment insurance eligibility), and for **tax residents** vs **non-residents** (different PIT calculation method).
+
+---
+
+## Step 1: Calculate Employee Insurance Contributions {#step1-insurance}
+
+### Contribution Rates (from July 1, 2025)
+
+| Insurance Fund | Vietnamese Employee | Foreign Employee |
+|---|---|---|
+| Social Insurance (SI) | 8% | 8% |
+| Health Insurance (HI) | 1.5% | 1.5% |
+| Unemployment Insurance (UI) | 1% | **0% (exempt)** |
+| **Total** | **10.5%** | **9.5%** |
+
+### Contribution Caps (2026)
+
+Insurance contributions are **capped** — you don't pay on the full salary once you exceed the ceiling:
+
+| Fund | Cap Basis | Cap Amount |
+|---|---|---|
+| SI + HI | 20 × reference level (VND 2,340,000) | **VND 46,800,000/month** |
+| UI | 20 × regional minimum wage (Zone 1) | ~VND 106,200,000/month |
+
+**Practical impact:** If your gross salary is VND 80,000,000/month, your SI and HI contributions are still calculated on VND 46,800,000, not VND 80,000,000.
+
+> **2025 change:** From July 1, 2025, the contribution base expanded to include base salary **plus allowances and regular additional agreed payments**. This may increase actual contributions for employees with large allowance components.
+
+### Calculation
+
+For a foreign employee earning VND 80,000,000/month:
+- SI: 8% × 46,800,000 = **VND 3,744,000**
+- HI: 1.5% × 46,800,000 = **VND 702,000**
+- UI: exempt (foreign employee)
+- **Total employee insurance: VND 4,446,000**
+
+---
+
+## Step 2: Calculate Assessable Income {#step2-assessable}
+
+Assessable income is the base on which PIT is calculated:
+
+**Assessable Income = Gross Salary − Employee Insurance Contributions − Personal Deduction − Dependant Deductions**
+
+### Deductions (2026 rates)
+
+| Deduction | Monthly Amount |
+|---|---|
+| Personal deduction (taxpayer) | VND 15,500,000 |
+| Each qualifying dependant | VND 6,200,000 |
+
+**Non-residents:** No deductions are available. PIT is calculated directly at 20% on gross income (no assessable income calculation needed).
+
+**Housing allowances:** Included in assessable income but capped at **15% of other assessable income**. Only the portion above this cap is taxable.
+
+---
+
+## Step 3: Apply PIT Brackets {#step3-pit}
+
+### Progressive Brackets (2026, Tax Residents)
+
+| Bracket | Monthly Taxable Income (VND) | Rate | Max Tax in Bracket |
+|---|---|---|---|
+| 1 | 0 – 10,000,000 | 5% | VND 500,000 |
+| 2 | 10,000,001 – 30,000,000 | 10% | VND 2,000,000 |
+| 3 | 30,000,001 – 60,000,000 | 20% | VND 6,000,000 |
+| 4 | 60,000,001 – 100,000,000 | 30% | VND 12,000,000 |
+| 5 | Over 100,000,000 | 35% | — |
+
+**Cumulative tax at each bracket ceiling:**
+- At VND 10M taxable: VND 500,000
+- At VND 30M taxable: VND 2,500,000
+- At VND 60M taxable: VND 8,500,000
+- At VND 100M taxable: VND 20,500,000
+
+---
+
+## Step 4: Your Net Salary {#step4-net}
+
+**Net = Gross − Employee SI − Employee HI − Employee UI − PIT**
+
+That's it. All other benefits (employer contributions, trade union fund) come on top of gross and do not affect your net take-home pay.
+
+---
+
+## Employer Cost Calculation {#employer-costs}
+
+Your employer pays additional contributions on top of your gross salary:
+
+| Contribution | Vietnamese Employee | Foreign Employee |
+|---|---|---|
+| Social Insurance (employer) | 17.5% | 17.5% |
+| Health Insurance (employer) | 3% | 3% |
+| Unemployment Insurance (employer) | 1% | 0% |
+| Trade Union Fund | 2% | 2% |
+| **Total extra cost** | **23.5%** | **22.5%** |
+
+*Employer contributions are capped at the same VND 46,800,000 base for SI and HI.*
+
+**Total Cost to Employer = Gross Salary × (1 + 22.5%)** *(for foreign employees, capped)*
+
+---
+
+## Worked Examples {#worked-examples}
+
+### Example A: Foreign Tax Resident, VND 50,000,000 Gross, No Dependants (2026)
+
+**Step 1 — Employee Insurance:**
+- SI: 8% × 46,800,000 = 3,744,000
+- HI: 1.5% × 46,800,000 = 702,000
+- Total: **VND 4,446,000**
+
+**Step 2 — Assessable Income:**
+- 50,000,000 − 4,446,000 − 15,500,000 = **VND 30,054,000**
+
+**Step 3 — PIT:**
+- 5% × 10,000,000 = 500,000
+- 10% × 20,054,000 = 2,005,400
+- Total PIT: **VND 2,505,400**
+
+**Step 4 — Net Salary:**
+- 50,000,000 − 4,446,000 − 2,505,400 = **VND 43,048,600**
+
+**Employer additional cost:**
+- SI: 17.5% × 46,800,000 = 8,190,000
+- HI: 3% × 46,800,000 = 1,404,000
+- Trade Union: 2% × 50,000,000 = 1,000,000
+- Total employer extra: **VND 10,594,000**
+- **Total cost to employer: VND 60,594,000**
+
+---
+
+### Example B: Foreign Non-Resident, VND 50,000,000 Gross
+
+- PIT: 20% × 50,000,000 = 10,000,000
+- (Insurance may still apply depending on contract type)
+- **Net salary: VND 40,000,000**
+
+---
+
+### Example C: Vietnamese Employee, VND 30,000,000 Gross, 2 Dependants (2026)
+
+**Step 1 — Employee Insurance:**
+- SI: 8% × 30,000,000 = 2,400,000
+- HI: 1.5% × 30,000,000 = 450,000
+- UI: 1% × 20 × Zone 1 min wage (5,310,000) = 1% × 106,200,000 cap → 1% × 30,000,000 = 300,000
+- Total: **VND 3,150,000**
+
+**Step 2 — Assessable Income:**
+- 30,000,000 − 3,150,000 − 15,500,000 − (2 × 6,200,000) = **VND −1,050,000**
+- Result is negative → **no PIT due**
+
+**Net Salary: VND 26,850,000** (0 PIT)
+
+*This illustrates the powerful effect of the 2026 deduction increases — many middle-income earners with dependants owe zero PIT.*
+
+---
+
+## Net-to-Gross (Reverse Calculation) {#net-to-gross}
+
+If you need to work backwards from a target net salary (common when negotiating offers), the calculation is complex because:
+- Insurance contributions have caps that create non-linearity
+- PIT brackets create step-changes in the effective rate
+
+The correct approach is **binary search** or iterative calculation:
+1. Estimate a gross salary
+2. Calculate net from that gross using the steps above
+3. Adjust up or down until the calculated net matches your target
+
+Our [Tax Calculator](/calculator) handles this automatically — enter your target net salary and select "Net → Gross" mode.
+
+**Rough rules of thumb (2026, foreign resident, no dependants):**
+- Net VND 30M ≈ Gross VND 40M
+- Net VND 50M ≈ Gross VND 65M
+- Net VND 80M ≈ Gross VND 105M
+
+*Actual results vary with dependants, allowances, and residency status.*
+
+---
+
+*Sources: Circular 111/2013/TT-BTC, Social Insurance Law No. 41/2024/QH15, Decree 143/2018/ND-CP. For official regulations: [vbpl.vn](https://vbpl.vn).*
+    `,
+  },
+  {
+    id: 18,
+    slug: 'social-health-insurance-foreigners-vietnam-2025',
+    title: 'Social & Health Insurance for Foreigners in Vietnam: Updated Rules (July 2025)',
+    excerpt: 'Complete guide to compulsory social insurance for foreign employees in Vietnam — who must enroll, contribution rates, the July 2025 law changes, caps, and how to claim a refund on departure.',
+    category: 'Insurance',
+    readTime: '10 min read',
+    featured: false,
+    source: 'Social Insurance Law No. 41/2024/QH15 (effective July 1, 2025), Decree 143/2018/ND-CP',
+    lastUpdated: '2026-03-01',
+    tableOfContents: [
+      { title: 'Who Must Enroll', anchor: 'who-must-enroll' },
+      { title: 'Contribution Rates', anchor: 'contribution-rates' },
+      { title: 'Contribution Caps', anchor: 'contribution-caps' },
+      { title: 'July 2025 Law Changes', anchor: 'july-2025-changes' },
+      { title: 'Health Insurance', anchor: 'health-insurance' },
+      { title: 'Pension & Lump-Sum Refund', anchor: 'pension-refund' },
+      { title: 'Private Health Insurance', anchor: 'private-health-insurance' },
+      { title: 'PIT Treatment of Insurance', anchor: 'pit-treatment' },
+    ],
+    content: `
+## Who Must Enroll {#who-must-enroll}
+
+Foreign nationals working in Vietnam are required to participate in **compulsory social insurance** if they meet all of the following conditions:
+
+1. They hold a valid **work permit**, practicing certificate, or practicing license issued by a Vietnamese authority
+2. They are working under a **labor contract of 12 months or longer**
+3. They are **not** an intra-company transferee (posted within the same enterprise from a foreign parent)
+4. They have **not reached statutory retirement age** (60 for men, 55 for women, with plans to equalize by 2035)
+5. Their home country has **not signed a bilateral social security agreement** with Vietnam that provides full exemption
+
+### Who is Exempt
+
+| Category | Reason |
+|---|---|
+| Intra-company transferees | Covered under home country scheme |
+| Contracts under 12 months | Below threshold for mandatory enrollment |
+| Those at or above retirement age | Statutory exemption |
+| Countries with bilateral treaties | Treaty supersedes local law |
+
+> **Note:** Vietnam currently has bilateral social security agreements with a limited number of countries. Check with your embassy or a local advisor to confirm your country's treaty status.
+
+---
+
+## Contribution Rates {#contribution-rates}
+
+### From July 1, 2025 (New Social Insurance Law No. 41/2024/QH15)
+
+**Employee contributions (foreign national):**
+
+| Fund | Rate |
+|---|---|
+| Retirement & Survivors | 8% |
+| Sickness & Maternity | 0% |
+| Occupational Accident & Disease | 0% |
+| Health Insurance | 1.5% |
+| Unemployment Insurance | **Exempt** |
+| **Total employee** | **9.5%** |
+
+**Employer contributions (for a foreign employee):**
+
+| Fund | Rate |
+|---|---|
+| Retirement | 14% |
+| Sickness & Maternity | 3% |
+| Occupational Accident & Disease | 0.5% |
+| Health Insurance | 3% |
+| Unemployment Insurance | **0%** |
+| **Total employer** | **20.5%** |
+
+### Comparison: Vietnamese vs Foreign Employee Total
+
+| Contributor | Vietnamese | Foreign |
+|---|---|---|
+| Employee total | 10.5% | 9.5% |
+| Employer total | 23.5% | 20.5% |
+
+---
+
+## Contribution Caps {#contribution-caps}
+
+Contributions are **not calculated on your full salary** once you exceed the statutory ceiling:
+
+**Social Insurance + Health Insurance cap:**
+- Maximum contribution base: 20 × reference level
+- Reference level (2026): **VND 2,340,000/month**
+- **Cap: VND 46,800,000/month**
+
+At VND 46,800,000 cap, maximum monthly contributions for a foreign employee:
+- Employee side: 9.5% × 46,800,000 = **VND 4,446,000**
+- Employer side: 20.5% × 46,800,000 = **VND 9,594,000**
+
+**Unemployment Insurance cap** (Vietnamese employees only):
+- 20 × regional minimum wage
+- Zone 1 (Hanoi, HCMC): approximately VND 106,200,000/month
+
+---
+
+## July 2025 Law Changes {#july-2025-changes}
+
+The new Social Insurance Law (No. 41/2024/QH15), effective July 1, 2025, introduced several significant changes:
+
+### 1. Expanded Contribution Base
+Previously, contributions were calculated on **base salary only**. From July 2025, the base now includes:
+- Base salary
+- **Allowances** (position, seniority, skill, etc.)
+- **Regular additional agreed payments** (performance bonuses paid monthly, etc.)
+
+This change may increase the actual contribution amounts for employees who receive significant allowances, even if the rates themselves haven't changed.
+
+### 2. Reduced Pension Eligibility Threshold
+- **Old law:** 20 years of contributions required to qualify for pension
+- **New law:** Only **15 years of contributions** required
+
+This is particularly significant for mid-career expats who may accumulate 15+ years before reaching retirement age.
+
+### 3. Broader Coverage
+The new law extends coverage to some categories of workers previously exempt, including certain part-time workers and platform/gig economy workers (phased implementation).
+
+---
+
+## Health Insurance {#health-insurance}
+
+**State Health Insurance (SHI)** is mandatory for all employees on qualifying contracts — both Vietnamese and foreign.
+
+**Employee contribution:** 1.5% of capped salary
+**Employer contribution:** 3% of capped salary
+
+### What SHI Covers
+
+SHI in Vietnam provides access to the public hospital network with subsidised fees. However, for foreign employees the practical limitations are significant:
+
+- **Language barriers** at many public hospitals
+- **Reimbursement rates** are low (often 80% of a co-pay, not full cost)
+- **International standards of care** are not guaranteed at public facilities
+- Specialist referrals can be slow
+
+Most foreign employees in Vietnam use SHI as a legal requirement but rely on **private international health insurance** for actual medical care.
+
+---
+
+## Pension & Lump-Sum Refund on Departure {#pension-refund}
+
+Foreign employees who leave Vietnam before reaching retirement age have two options:
+
+### Option 1: Leave Contributions in the System
+If you have **15+ years of contributions** (from July 2025), you can apply for a pension when you reach retirement age — even if you are no longer in Vietnam. Pension payments can be transferred abroad.
+
+### Option 2: Lump-Sum Refund
+If you have **fewer than 15 years of contributions**, you can request a one-time lump-sum refund of your retirement and survivor fund contributions upon departure from Vietnam.
+
+**To claim:**
+1. Submit application to the Vietnam Social Insurance Authority (VSIA) — can be done through your employer
+2. Provide proof of departure / termination of labor contract
+3. Allow approximately 5–7 business days for processing
+4. Funds are transferred to a VND bank account at a Vietnamese bank
+
+> **Important:** You can only claim the refund for the **retirement/survivors portion (8% employee side)**. Health Insurance contributions are **not refundable**.
+
+---
+
+## Private Health Insurance {#private-health-insurance}
+
+Given the practical limitations of state health insurance, most foreign employees in Vietnam maintain private international coverage. Common providers:
+
+| Provider | Type | Notes |
+|---|---|---|
+| Allianz Care | International | Comprehensive, widely used by expats |
+| Cigna Global | International | Strong Asia network |
+| AXA | International | Good coverage in Vietnam |
+| William Russell | International | Popular with UK expats |
+| Pacific Cross | Regional | Strong Vietnam/SE Asia network |
+| Bao Viet | Local | More affordable, Vietnam network |
+
+**Estimated cost:** USD 200–500/month for comprehensive individual coverage, depending on age and plan.
+
+**PIT treatment:** Premiums paid by employers for private health insurance are generally treated as **taxable benefits in kind** for the employee. Premiums paid by employees themselves from their net salary are **not deductible** from PIT.
+
+---
+
+## PIT Treatment of Insurance {#pit-treatment}
+
+Understanding how insurance interacts with your PIT calculation:
+
+| Insurance Type | PIT Treatment |
+|---|---|
+| Employee's own compulsory SI + HI contributions | **Deductible** from assessable income before PIT |
+| Employer's statutory contributions on your behalf | **Not a taxable benefit** to you |
+| Private health insurance premiums (employer-paid) | **Taxable benefit in kind** |
+| Private health insurance (employee self-paid) | **Not deductible** |
+
+---
+
+*Sources: Social Insurance Law No. 41/2024/QH15, Decree 143/2018/ND-CP, EY Vietnam Tax Alert (June 2025), Alitium Vietnam. For official regulations: [vbpl.vn](https://vbpl.vn).*
+    `,
+  },
+  {
+    id: 19,
+    slug: 'pit-finalization-step-by-step-guide',
+    title: 'Vietnam PIT Finalization: Complete Step-by-Step Guide for Foreign Employees',
+    excerpt: 'Who must file, deadlines, required documents, the exact filing process, how refunds work, and what penalties apply — everything about Vietnam annual PIT finalization (quyết toán thuế).',
+    category: 'Filing & Forms',
+    readTime: '12 min read',
+    featured: true,
+    source: 'Circular 111/2013/TT-BTC (Articles 27–29), Law on Tax Administration No. 38/2019/QH14',
+    lastUpdated: '2026-03-01',
+    tableOfContents: [
+      { title: 'What Is PIT Finalization?', anchor: 'what-is-pit-finalization' },
+      { title: 'Who Must File', anchor: 'who-must-file' },
+      { title: 'Filing Deadlines', anchor: 'filing-deadlines' },
+      { title: 'Required Documents', anchor: 'required-documents' },
+      { title: 'Step-by-Step Filing Process', anchor: 'filing-process' },
+      { title: 'How Tax Refunds Work', anchor: 'tax-refunds' },
+      { title: 'Employer vs Individual Filing', anchor: 'employer-vs-individual' },
+      { title: 'Departure Finalization', anchor: 'departure-finalization' },
+      { title: 'Penalties for Non-Compliance', anchor: 'penalties' },
+    ],
+    content: `
+## What Is PIT Finalization? {#what-is-pit-finalization}
+
+Vietnam's PIT system operates on a **pay-as-you-earn** basis — your employer deducts estimated tax from each monthly paycheck. But the monthly withholding is an **estimate**, not a final calculation.
+
+**PIT finalization (quyết toán thuế TNCN)** is the annual reconciliation process where your actual tax liability for the full year is calculated — taking into account your real income, all deductions, your correct residency status, and any dependants you registered.
+
+The result is either:
+- **A refund** — you overpaid during the year (very common for expats who had multiple employers, changed jobs, or did not claim all dependants)
+- **Additional tax due** — you underpaid during the year
+
+> Most foreign employees who work with a professional tax service **receive a refund**. The most common reason is that monthly withholding doesn't fully account for all deductions, especially for mid-year arrivals.
+
+---
+
+## Who Must File {#who-must-file}
+
+### Must file a PIT finalization return
+
+You are required to file if you are a **tax resident** AND any of the following apply:
+
+- You have **additional tax payable** of more than VND 50,000
+- You are entitled to a **tax refund** and wish to claim it
+- You had income from **two or more employers** during the year
+- You received **income from outside Vietnam** (foreign bonuses, RSU vesting, offshore assignments)
+- You are **leaving Vietnam permanently** before year-end
+- You want to **claim dependant deductions** that were not applied during monthly withholding
+
+### Exempt from filing
+
+You do NOT need to file if:
+- You are a **non-resident** (your 20% monthly withholding is final)
+- You have income from **only one employer** and your withholding was correct (i.e., you owe zero additional tax and want no refund)
+- Your total additional tax payable is VND 50,000 or less
+
+### May authorize employer to file on your behalf
+
+You can authorize your employer to file finalization for you if:
+- You are on a **labor contract of 3 months or more** with the same employer
+- You **remain employed** with that employer during the finalization period
+- Any additional income you received was below VND 10,000,000/month on average and had 10% withholding already applied
+
+---
+
+## Filing Deadlines {#filing-deadlines}
+
+| Who Is Filing | Deadline |
+|---|---|
+| **Employers** (on behalf of employees) | **March 31** of the following year |
+| **Individual employees** filing themselves | **April 30** of the following year |
+| **Foreigners leaving Vietnam permanently** | Within **45 days** of departure date |
+
+**For the 2025 tax year:**
+- Employer deadline: March 31, 2026
+- Individual deadline: April 30, 2026
+- (Note: If April 30 falls on a public holiday, the deadline extends to the next working day)
+
+> **Tip:** Don't wait until April 30. Tax authorities experience high volumes, and eTax systems can be slow near the deadline. Start collecting documents in January.
+
+---
+
+## Required Documents {#required-documents}
+
+Gather these before starting your filing:
+
+### Identity & Employment
+- Passport (all pages with entry/exit stamps for the tax year)
+- Tax Identification Number (TIN) — 10-digit code
+- Employment contract(s) for the year
+- Income and tax deduction certificates from **all employers** in the tax year
+
+### Income Documentation
+- Monthly payslips (all 12 months)
+- Year-end income summary from employer(s)
+- Documentation of any **overseas income** (offshore bonuses, home country salary top-ups, RSU/ESOP vesting statements)
+- Bank statements showing salary deposits
+
+### Deductions
+- **Dependant registration confirmation** from the tax authority
+- Birth certificates (for children)
+- School enrollment certificates (for children 18+ studying)
+- Medical/disability certificates (for disabled dependants)
+- Marriage certificate or relationship proof (for spouse/parent dependants)
+- Receipts for approved charitable donations
+
+### For Refunds
+- **VND bank account number** at a Vietnamese bank (refunds cannot be paid to foreign currency accounts)
+
+### For DTA Claims
+- **Certificate of Tax Residency** from your home country's tax authority
+- Proof of foreign tax already paid on the same income
+
+---
+
+## Step-by-Step Filing Process {#filing-process}
+
+### Step 1: Determine Your Residency Status
+Calculate your actual days in Vietnam for the tax year. Count days using your passport stamps. If you were present for 183+ days, you are a tax resident.
+
+### Step 2: Collect All Income Information
+List every source of income:
+- Vietnam salary and wages (all employers)
+- Cash allowances (meals, housing, transport, etc.)
+- Benefits in kind with taxable value
+- Overseas income received while resident in Vietnam
+
+### Step 3: Identify Exempt Income
+Separate out non-taxable items:
+- Round-trip airfare to home country (one per year)
+- Relocation allowance (one-time)
+- School fees paid directly by employer (K–12)
+- Overtime/nightshift premiums
+- Meal allowance up to VND 730,000/month
+
+### Step 4: Calculate Your Actual Tax Liability
+Apply the annual brackets to your full-year assessable income:
+- Total assessable income = Total gross income − Total insurance contributions − (Personal deduction × 12) − (Dependant deduction × 12 × number of dependants)
+- Apply annual PIT brackets (multiply monthly brackets by 12)
+
+### Step 5: Compare Against Tax Withheld
+- Sum up all monthly tax withheld across all employers (from your certificates)
+- Difference = refund (if withheld > actual liability) or additional payment due
+
+### Step 6: File the Return
+
+**Via employer:** Sign authorization; employer files Form 05/QTT-TNCN before March 31.
+
+**Via eTax (self-filing):**
+1. Log in to [etax.gdt.gov.vn](https://etax.gdt.gov.vn) with your e-ID
+2. Complete Form 02/CK-TNCN (for individuals with income from wages)
+3. Attach supporting documents
+4. Submit electronically
+5. Receive confirmation code
+
+**Via tax office:** Submit paper forms at the district tax authority where your employer is registered.
+
+**Via tax consultant:** Recommended for multi-employer, overseas income, or refund claim cases.
+
+---
+
+## How Tax Refunds Work {#tax-refunds}
+
+Refunds are common — particularly for:
+- Employees who worked for only part of the year (personal deduction applies for full year even if you worked only 6 months)
+- Multi-employer situations (each employer deducts independently, leading to over-withholding)
+- Employees who registered dependants mid-year but were withheld at the higher rate all year
+
+**Refund process:**
+1. File finalization return showing overpayment
+2. Tax authority reviews the return (typically 15–30 business days for individuals)
+3. Refund is transferred directly to your registered **VND bank account** at a Vietnamese bank
+4. You will receive a notice of tax authority decision before the refund is processed
+
+> **Critical:** You must have a VND bank account at a Vietnamese bank to receive a refund. Foreign currency accounts are not eligible.
+
+---
+
+## Employer vs Individual Filing {#employer-vs-individual}
+
+| Aspect | Employer Files | Individual Files |
+|---|---|---|
+| Who handles paperwork | Your HR/payroll team | You (or your tax advisor) |
+| Deadline | March 31 | April 30 |
+| Best for | Simple, single-employer cases | Multi-employer, overseas income, DTA claims |
+| Disadvantages | Employer may miss personal deductions | More work required by you |
+| Authorization | Required (sign Form 02/UQ-QTT-TNCN) | No authorization needed |
+
+---
+
+## Departure Finalization {#departure-finalization}
+
+If you are **leaving Vietnam permanently**, different rules apply:
+
+- You must file a **departure finalization** within **45 days of your departure date**
+- This is a mandatory legal requirement — failure can result in complications at immigration
+- Your employer is typically responsible for filing on your behalf if you are still employed at time of departure
+- If you have already left Vietnam, you can appoint a legal representative (tax advisor, former employer HR) to file on your behalf
+
+**Documents specifically needed for departure finalization:**
+- Proof of final departure date (ticket confirmation or passport stamp)
+- Termination letter or end-of-employment documentation
+- All regular finalization documents (see above)
+
+**Social insurance refund:** Simultaneously with your PIT finalization, you can apply for a lump-sum SI refund (if under 15 years of contributions) through your employer or directly at the VSIA office.
+
+---
+
+## Penalties for Non-Compliance {#penalties}
+
+Vietnam takes tax compliance seriously. Penalties for foreign employees:
+
+| Violation | Penalty |
+|---|---|
+| Late filing | Fine of 2%–5% of tax due per month, up to 20% total |
+| Late payment | **0.03% per day** on unpaid tax |
+| Failure to file | Fine of VND 800,000 – 2,000,000 (administrative), plus tax + interest |
+| Tax evasion / fraud | Up to 3× the evaded tax amount; criminal charges possible |
+
+**Departure-specific risk:** Foreign employees who fail to settle taxes before departure may face:
+- Exit difficulties at the airport (if flagged by immigration/tax authority)
+- Complications obtaining future Vietnamese visas
+- Employer liability if employer certified tax compliance
+
+> **The bottom line:** The cost of non-compliance far exceeds the cost of professional tax filing. Even a VND 1,500,000 filing fee is trivial compared to interest and penalties on unpaid taxes.
+
+---
+
+*Sources: Circular 111/2013/TT-BTC (Articles 27–29), Law on Tax Administration No. 38/2019/QH14, Vietnam Briefing, Elitez Asia. For official guidance: [gdt.gov.vn](https://gdt.gov.vn) and [vbpl.vn](https://vbpl.vn).*
+    `,
+  },
 ]
 
 export function getArticleBySlug(slug: string): Article | undefined {

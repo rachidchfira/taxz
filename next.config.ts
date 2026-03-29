@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Vercel handles output automatically - no standalone needed
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   reactStrictMode: true,
   
   // Performance optimizations
@@ -21,6 +17,14 @@ const nextConfig: NextConfig = {
     ],
   },
   
+  // Redirect duplicate/legacy routes to canonical URLs
+  async redirects() {
+    return [
+      { source: '/resources/knowledge', destination: '/knowledge-base', permanent: true },
+      { source: '/resources/official-sources', destination: '/official-sources', permanent: true },
+    ]
+  },
+
   // Experimental features for better performance
   experimental: {
     optimizePackageImports: [

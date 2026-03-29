@@ -831,7 +831,7 @@ export default function LeavingVietnamPage() {
                   Book Free Consultation
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg">
+              <Button asChild size="lg" variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg">
                 <a href="https://zalo.me/84703027485">
                   <Phone className="w-5 h-5 mr-2" />
                   Call Now: ZALO: +84703027485

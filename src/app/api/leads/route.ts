@@ -24,9 +24,10 @@ export async function POST(request: NextRequest) {
         name: data.name,
         email: data.email,
         phone: data.phone,
-        company: data.nationality,
         interest: data.service,
-        notes: data.message,
+        notes: data.nationality
+          ? `Nationality: ${data.nationality}${data.message ? '\n' + data.message : ''}`
+          : data.message,
         source: data.source || 'consultation_form',
         calculatorData: data.calculatorData,
         status: 'new',
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { success: false, errors: error.errors },
+        { success: false, errors: error.issues },
         { status: 400 }
       )
     }

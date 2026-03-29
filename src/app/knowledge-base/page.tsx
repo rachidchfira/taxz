@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -36,14 +37,14 @@ const categories = [
     icon: MapPin,
     title: 'Tax Residency',
     description: 'Understanding the 183-day rule, regular residence criteria, and how tax residency status affects your obligations in Vietnam.',
-    articleCount: 12,
+    articleCount: 4,
     color: 'text-blue-600',
     bgColor: 'bg-blue-50 dark:bg-blue-950/30',
     articles: [
-      '183-Day Rule Explained',
-      'Regular Residence Criteria',
-      'Tax Resident vs Non-Resident',
-      'Dual Residency Situations',
+      { title: '183-Day Rule & Tax Residency: Complete Guide', slug: 'understanding-tax-residency-complete-guide-foreigners' },
+      { title: 'Vietnam PIT Guide for Expats 2025–2026', slug: 'vietnam-pit-complete-guide-expats-2025-2026' },
+      { title: 'Leaving Vietnam: Tax Finalization Checklist', slug: 'leaving-vietnam-tax-finalization-checklist' },
+      { title: 'Remote Work Tax Obligations in Vietnam', slug: 'remote-work-tax-obligations-vietnam' },
     ],
   },
   {
@@ -51,14 +52,14 @@ const categories = [
     icon: Percent,
     title: 'Tax Rates & Brackets',
     description: 'Progressive tax rates for residents, flat rates for non-residents, and how to calculate your effective tax burden.',
-    articleCount: 8,
+    articleCount: 4,
     color: 'text-teal-600',
     bgColor: 'bg-teal-50 dark:bg-teal-950/30',
     articles: [
-      'Progressive Tax Brackets 2025',
-      'Flat Rate for Non-Residents',
-      'Calculating Effective Tax Rate',
-      'Year-End Tax Finalization',
+      { title: 'Progressive Tax Brackets Explained (2026)', slug: 'progressive-tax-brackets-explained' },
+      { title: 'Non-Resident Flat 20% Tax Rate Explained', slug: 'non-resident-flat-tax-rate-guide' },
+      { title: 'Vietnam PIT Complete Guide 2025–2026', slug: 'vietnam-pit-complete-guide-expats-2025-2026' },
+      { title: 'Family Deduction Changes: 2025 vs 2026', slug: 'family-deduction-changes-2025-vs-2026' },
     ],
   },
   {
@@ -66,14 +67,14 @@ const categories = [
     icon: Wallet,
     title: 'Deductions',
     description: 'Family circumstance deductions, personal deductions, insurance contributions, and charitable donations that reduce taxable income.',
-    articleCount: 15,
+    articleCount: 4,
     color: 'text-purple-600',
     bgColor: 'bg-purple-50 dark:bg-purple-950/30',
     articles: [
-      'Family Circumstance Deductions',
-      'Personal Deduction Amounts',
-      'Social Insurance Deductions',
-      'Charitable Donation Deductions',
+      { title: 'Family Deduction Changes: 2025 vs 2026', slug: 'family-deduction-changes-2025-vs-2026' },
+      { title: 'Social Insurance for Foreign Employees', slug: 'social-insurance-foreign-employees-who-must-pay' },
+      { title: 'Housing Allowance & Benefits-in-Kind', slug: 'housing-allowance-benefits-tax-treatment' },
+      { title: 'Gross to Net Salary Calculation', slug: 'gross-to-net-salary-calculation-vietnam' },
     ],
   },
   {
@@ -81,14 +82,14 @@ const categories = [
     icon: FileText,
     title: 'Filing & Forms',
     description: 'Tax finalization deadlines, required documentation, official forms, and step-by-step filing procedures.',
-    articleCount: 10,
+    articleCount: 4,
     color: 'text-orange-600',
     bgColor: 'bg-orange-50 dark:bg-orange-950/30',
     articles: [
-      'Annual Filing Deadlines',
-      'Required Documents Checklist',
-      'Form 02/CK-TNCN Guide',
-      'Filing Procedures',
+      { title: 'PIT Finalization: Step-by-Step Guide', slug: 'pit-finalization-step-by-step-guide' },
+      { title: 'PIT Withholding vs Finalization Explained', slug: 'pit-withholding-vs-finalization-difference' },
+      { title: 'New Arrival Tax Registration Guide', slug: 'new-arrival-tax-registration-guide' },
+      { title: 'Tax Penalties & Audit Guide for Foreigners', slug: 'tax-penalties-audit-guide-vietnam' },
     ],
   },
 ]
@@ -160,7 +161,7 @@ export default function KnowledgeBasePage() {
       category.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       category.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       category.articles.some((article) =>
-        article.toLowerCase().includes(searchQuery.toLowerCase())
+        article.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     const matchesCategory = selectedCategory === null || category.id === selectedCategory
     return matchesSearch && matchesCategory
@@ -262,7 +263,7 @@ export default function KnowledgeBasePage() {
               {filteredCategories.map((category) => (
                 <Card
                   key={category.id}
-                  className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                  className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden"
                 >
                   <CardHeader className="pb-3">
                     <div
@@ -283,25 +284,25 @@ export default function KnowledgeBasePage() {
                         {category.articleCount} articles
                       </Badge>
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-1">
                       {category.articles.slice(0, 3).map((article, index) => (
-                        <div
+                        <Link
                           key={index}
-                          className="text-xs text-muted-foreground flex items-center gap-2 py-1"
+                          href={`/articles/${article.slug}`}
+                          className="text-xs text-muted-foreground hover:text-[#40E0D0] flex items-center gap-2 py-1 transition-colors group/item"
                         >
-                          <div className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                          <span className="truncate">{article}</span>
-                        </div>
+                          <div className="w-1 h-1 rounded-full bg-muted-foreground/40 group-hover/item:bg-[#40E0D0] transition-colors shrink-0" />
+                          <span className="truncate">{article.title}</span>
+                        </Link>
                       ))}
                       {category.articles.length > 3 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="w-full mt-2 h-8 text-xs text-[#40E0D0] hover:text-[#40E0D0] hover:bg-[#40E0D0]/10"
+                        <Link
+                          href={`/articles/${category.articles[3].slug}`}
+                          className="flex items-center gap-1 mt-2 text-xs text-[#40E0D0] hover:text-[#40E0D0]/80 font-medium py-1 transition-colors"
                         >
-                          View all {category.articleCount} articles
-                          <ArrowRight className="w-3 h-3 ml-1" />
-                        </Button>
+                          View more articles
+                          <ArrowRight className="w-3 h-3" />
+                        </Link>
                       )}
                     </div>
                   </CardContent>
@@ -477,19 +478,25 @@ export default function KnowledgeBasePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
+                asChild
                 size="lg"
                 className="bg-[#40E0D0] hover:bg-[#40E0D0]/90 text-[#1E3A8A] font-medium px-8"
               >
-                <Users className="w-5 h-5 mr-2" />
-                Book Free Consultation
+                <Link href="/contact">
+                  <Users className="w-5 h-5 mr-2" />
+                  Book Free Consultation
+                </Link>
               </Button>
               <Button
+                asChild
                 size="lg"
                 variant="outline"
                 className="bg-transparent border-white text-white hover:bg-white hover:text-[#1E3A8A] px-8"
               >
-                <Calculator className="w-5 h-5 mr-2" />
-                Try Tax Calculator
+                <Link href="/calculator">
+                  <Calculator className="w-5 h-5 mr-2" />
+                  Try Tax Calculator
+                </Link>
               </Button>
             </div>
           </div>

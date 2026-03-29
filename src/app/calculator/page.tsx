@@ -1,1023 +1,844 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   Calculator as CalcIcon,
   AlertCircle,
-  CheckCircle2,
-  Info,
   ArrowRight,
+  ArrowLeft,
   Shield,
   RefreshCcw,
   BadgePercent,
-  FileText,
-  DollarSign,
-  TrendingUp,
   Users,
-  Clock,
+  MapPin,
+  Globe,
+  TrendingUp,
+  Info,
+  ChevronRight,
   Sparkles,
-  Scale,
-  ExternalLink,
-  Phone
 } from 'lucide-react'
+import {
+  calcGrossToNet,
+  calcNetToGross,
+  PROFILES,
+  UI_CAP_BY_ZONE,
+  ZONE_MIN_WAGES,
+  SI_CAP_BASE,
+  HI_CAP_BASE,
+  TU_CAP_BASE,
+  type CalcInput,
+  type CalcResult,
+  type Zone,
+  type Nationality,
+  type InsuranceType,
+  type PitMethod,
+  type TaxProfile,
+} from '@/lib/tax-engine'
 
-// Tax Brackets for Personal Income Tax (PIT) in Vietnam 2025 (Monthly)
-const TAX_BRACKETS_2025 = [
-  { level: 1, minIncome: 0, maxIncome: 5000000, rate: 0.05 },
-  { level: 2, minIncome: 5000000, maxIncome: 10000000, rate: 0.10 },
-  { level: 3, minIncome: 10000000, maxIncome: 18000000, rate: 0.15 },
-  { level: 4, minIncome: 18000000, maxIncome: 32000000, rate: 0.20 },
-  { level: 5, minIncome: 32000000, maxIncome: 52000000, rate: 0.25 },
-  { level: 6, minIncome: 52000000, maxIncome: 80000000, rate: 0.30 },
-  { level: 7, minIncome: 80000000, maxIncome: Infinity, rate: 0.35 },
-]
+// ─── Helpers ───────────────────────────────────────────────────────────────────
 
-// Family circumstance deductions
-const DEDUCTIONS_2025 = {
-  taxpayer: 11000000,
-  dependant: 4400000,
+function fmtVND(v: number) {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(v)
 }
 
-const DEDUCTIONS_2026 = {
-  taxpayer: 15500000,
-  dependant: 6200000,
+function fmtUSD(v: number, rate: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(v / rate)
 }
 
-// Social Insurance rates
-const SI_RATES = {
-  socialInsurance: 0.08,
-  healthInsurance: 0.015,
-  unemploymentInsurance: 0.01,
+function fmtMoney(v: number, currency: 'VND' | 'USD', rate: number) {
+  return currency === 'VND' ? fmtVND(v) : fmtUSD(v, rate)
 }
 
-// Base salary for insurance cap (2024)
-const BASE_SALARY = 2340000
-const MAX_SI_SALARY = 20 * BASE_SALARY // 46,800,000 VND
-
-// Format currency helper for VND
-function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-    maximumFractionDigits: 0,
-  }).format(value)
+function pct(v: number) {
+  return v.toFixed(2) + '%'
 }
 
-// Calculate progressive tax with bracket breakdown
-function calculateProgressiveTax(taxableIncome: number) {
-  const breakdown: Array<{
-    level: number
-    bracket: string
-    taxable: number
-    tax: number
-    rate: number
-  }> = []
+// ─── Row component for breakdown tables ────────────────────────────────────────
 
-  let totalTax = 0
-  let remainingIncome = taxableIncome
-
-  for (const bracket of TAX_BRACKETS_2025) {
-    if (remainingIncome <= 0) break
-
-    const bracketWidth = bracket.maxIncome - bracket.minIncome
-    const taxableInBracket = Math.min(remainingIncome, bracketWidth)
-
-    if (taxableInBracket > 0) {
-      const taxInBracket = taxableInBracket * bracket.rate
-      totalTax += taxInBracket
-
-      breakdown.push({
-        level: bracket.level,
-        bracket: bracket.level === 7
-          ? `Over ${formatCurrency(bracket.minIncome)}`
-          : `${formatCurrency(bracket.minIncome)} - ${formatCurrency(bracket.maxIncome)}`,
-        taxable: taxableInBracket,
-        tax: taxInBracket,
-        rate: bracket.rate * 100,
-      })
-    }
-
-    remainingIncome -= taxableInBracket
-  }
-
-  return { totalTax, breakdown }
+function Row({
+  label,
+  value,
+  sub,
+  highlight,
+  bold,
+  indent,
+  negative,
+  color,
+}: {
+  label: string
+  value: string
+  sub?: string
+  highlight?: boolean
+  bold?: boolean
+  indent?: boolean
+  negative?: boolean
+  color?: string
+}) {
+  return (
+    <div
+      className={[
+        'flex items-center justify-between py-2.5 px-3 rounded-lg',
+        highlight ? 'bg-[#1E3A8A]/8 border border-[#1E3A8A]/15' : 'hover:bg-muted/40',
+        indent ? 'ml-4' : '',
+      ].join(' ')}
+    >
+      <div>
+        <span className={['text-sm', bold ? 'font-semibold' : 'text-muted-foreground'].join(' ')}>
+          {label}
+        </span>
+        {sub && <span className="ml-2 text-xs text-muted-foreground/70">{sub}</span>}
+      </div>
+      <span
+        className={[
+          'text-sm font-medium tabular-nums',
+          bold ? 'text-base font-bold' : '',
+          negative ? 'text-red-600 dark:text-red-400' : '',
+          color || '',
+        ].join(' ')}
+      >
+        {value}
+      </span>
+    </div>
+  )
 }
+
+// ─── Main page ─────────────────────────────────────────────────────────────────
 
 export default function CalculatorPage() {
-  // State for PIT Calculator
-  const [calculationPeriod, setCalculationPeriod] = useState<'monthly' | 'yearly'>('monthly')
-  const [taxResidency, setTaxResidency] = useState<'resident' | 'non-resident'>('resident')
-  const [contractType, setContractType] = useState<'longTerm' | 'shortTerm'>('longTerm')
-  const [grossIncome, setGrossIncome] = useState('')
-  const [monthsWorked, setMonthsWorked] = useState('12')
-  const [taxYear, setTaxYear] = useState<'2025' | '2026'>('2025')
-  const [dependants, setDependants] = useState('0')
-  const [includeInsurance, setIncludeInsurance] = useState(true)
-  const [showResults, setShowResults] = useState(false)
+  // Direction
+  const [direction, setDirection] = useState<'GROSS_TO_NET' | 'NET_TO_GROSS'>('GROSS_TO_NET')
 
-  // State for Insurance Calculator
-  const [salaryBase, setSalaryBase] = useState('')
-  const [showInsuranceResults, setShowInsuranceResults] = useState(false)
+  // Inputs
+  const [salaryInput, setSalaryInput] = useState('')
+  const [currency, setCurrency]       = useState<'VND' | 'USD'>('VND')
+  const [exchangeRate, setExchangeRate] = useState('25000')
+  const [nationality, setNationality]   = useState<Nationality>('VIETNAMESE')
+  const [insuranceType, setInsuranceType] = useState<InsuranceType>('FULL_SALARY')
+  const [customInsurance, setCustomInsurance] = useState('')
+  const [pitMethod, setPitMethod]     = useState<PitMethod>('PROGRESSIVE')
+  const [zone, setZone]               = useState<Zone>(1)
+  const [dependants, setDependants]   = useState('0')
+  const [profile, setProfile]         = useState<TaxProfile>('2026')
 
-  // PIT Results
-  const [pitResults, setPitResults] = useState<{
-    grossIncome: number
-    totalDeductions: number
-    insuranceDeduction: number
-    personalRelief: number
-    dependantRelief: number
-    taxableIncome: number
-    annualPIT: number
-    effectiveRate: number
-    breakdown: Array<{
-      level: number
-      bracket: string
-      taxable: number
-      tax: number
-      rate: number
-    }>
-  } | null>(null)
+  // Results
+  const [result, setResult] = useState<CalcResult | null>(null)
+  const [computedGross, setComputedGross] = useState<number | null>(null)
+  const [error, setError] = useState('')
 
-  // Insurance Results (computed)
-  const insuranceResults = useMemo(() => {
-    const salary = parseFloat(salaryBase) || 0
-    if (salary <= 0) return null
+  const handleCalculate = () => {
+    setError('')
+    setResult(null)
+    setComputedGross(null)
 
-    const cappedSalary = Math.min(salary, MAX_SI_SALARY)
-    const socialInsurance = cappedSalary * SI_RATES.socialInsurance
-    const healthInsurance = cappedSalary * SI_RATES.healthInsurance
-    const unemploymentInsurance = cappedSalary * SI_RATES.unemploymentInsurance
-    const total = socialInsurance + healthInsurance + unemploymentInsurance
-
-    return {
-      salary,
-      cappedSalary,
-      socialInsurance,
-      healthInsurance,
-      unemploymentInsurance,
-      total,
-      isCapped: salary > MAX_SI_SALARY,
-    }
-  }, [salaryBase])
-
-  const handleCalculatePIT = () => {
-    const gross = parseFloat(grossIncome) || 0
-    const months = parseInt(monthsWorked) || 12
-    const deps = parseInt(dependants) || 0
-    const isMonthly = calculationPeriod === 'monthly'
-
-    if (gross <= 0) return
-
-    const deductions = taxYear === '2025' ? DEDUCTIONS_2025 : DEDUCTIONS_2026
-
-    // Calculate based on contract type and residency
-    if (contractType === 'shortTerm') {
-      const income = isMonthly ? gross * months : gross
-      if (income < 2000000) {
-        setPitResults({
-          grossIncome: income,
-          totalDeductions: 0,
-          insuranceDeduction: 0,
-          personalRelief: 0,
-          dependantRelief: 0,
-          taxableIncome: income,
-          annualPIT: 0,
-          effectiveRate: 0,
-          breakdown: [],
-        })
-        setShowResults(true)
-        return
-      }
-
-      const taxPayable = income * 0.1
-      setPitResults({
-        grossIncome: income,
-        totalDeductions: 0,
-        insuranceDeduction: 0,
-        personalRelief: 0,
-        dependantRelief: 0,
-        taxableIncome: income,
-        annualPIT: taxPayable,
-        effectiveRate: 10,
-        breakdown: [{
-          level: 1,
-          bracket: 'Flat rate for short-term contracts (<3 months)',
-          taxable: income,
-          tax: taxPayable,
-          rate: 10,
-        }],
-      })
-      setShowResults(true)
+    const rate = parseFloat(exchangeRate) || 25000
+    const rawAmount = parseFloat(salaryInput) || 0
+    if (rawAmount <= 0) {
+      setError('Please enter a valid salary amount.')
       return
     }
+    const amountVND = currency === 'VND' ? rawAmount : rawAmount * rate
 
-    // Non-resident - flat 20% rate
-    if (taxResidency === 'non-resident') {
-      const income = isMonthly ? gross * months : gross
-      const taxPayable = income * 0.2
+    const customInsuranceVND = currency === 'VND'
+      ? (parseFloat(customInsurance) || 0)
+      : (parseFloat(customInsurance) || 0) * rate
 
-      setPitResults({
-        grossIncome: income,
-        totalDeductions: 0,
-        insuranceDeduction: 0,
-        personalRelief: 0,
-        dependantRelief: 0,
-        taxableIncome: income,
-        annualPIT: taxPayable,
-        effectiveRate: 20,
-        breakdown: [{
-          level: 1,
-          bracket: 'Flat rate for non-residents',
-          taxable: income,
-          tax: taxPayable,
-          rate: 20,
-        }],
+    const input: CalcInput = {
+      grossSalary: amountVND,
+      insuranceType,
+      customInsuranceSalary: customInsuranceVND,
+      pitMethod,
+      zone,
+      dependants: parseInt(dependants) || 0,
+      nationality,
+      profile,
+    }
+
+    if (direction === 'GROSS_TO_NET') {
+      setResult(calcGrossToNet(input))
+    } else {
+      const { gross, result: r } = calcNetToGross(amountVND, {
+        insuranceType,
+        customInsuranceSalary: customInsuranceVND,
+        pitMethod,
+        zone,
+        dependants: parseInt(dependants) || 0,
+        nationality,
+        profile,
       })
-      setShowResults(true)
-      return
-    }
-
-    // Resident with long-term contract - progressive tax
-    const annualGross = isMonthly ? gross * months : gross
-    const personalRelief = deductions.taxpayer * months
-    const dependantRelief = deps * deductions.dependant * months
-
-    // Insurance deductions
-    let insuranceDeductions = 0
-    if (includeInsurance) {
-      const monthlyGross = isMonthly ? gross : gross / months
-      const cappedSalary = Math.min(monthlyGross, MAX_SI_SALARY)
-      const monthlyInsurance = cappedSalary * (SI_RATES.socialInsurance + SI_RATES.healthInsurance)
-      insuranceDeductions = monthlyInsurance * months
-    }
-
-    const totalDeductions = personalRelief + dependantRelief + insuranceDeductions
-    const taxableIncome = Math.max(0, annualGross - totalDeductions)
-
-    // Calculate tax with breakdown
-    const { totalTax, breakdown } = calculateProgressiveTax(taxableIncome)
-    const effectiveRate = annualGross > 0 ? (totalTax / annualGross) * 100 : 0
-
-    setPitResults({
-      grossIncome: annualGross,
-      totalDeductions,
-      insuranceDeduction: insuranceDeductions,
-      personalRelief,
-      dependantRelief,
-      taxableIncome,
-      annualPIT: totalTax,
-      effectiveRate,
-      breakdown,
-    })
-    setShowResults(true)
-  }
-
-  const handleCalculateInsurance = () => {
-    if (insuranceResults) {
-      setShowInsuranceResults(true)
+      setComputedGross(gross)
+      setResult(r)
     }
   }
 
-  const resetPITCalculator = () => {
-    setCalculationPeriod('monthly')
-    setTaxResidency('resident')
-    setContractType('longTerm')
-    setGrossIncome('')
-    setMonthsWorked('12')
-    setTaxYear('2025')
-    setDependants('0')
-    setIncludeInsurance(true)
-    setShowResults(false)
-    setPitResults(null)
+  const handleReset = () => {
+    setSalaryInput('')
+    setResult(null)
+    setComputedGross(null)
+    setError('')
   }
 
-  const resetInsuranceCalculator = () => {
-    setSalaryBase('')
-    setShowInsuranceResults(false)
-  }
+  const rate = parseFloat(exchangeRate) || 25000
+  const cfg = PROFILES[profile]
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
 
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative py-12 lg:py-20 overflow-hidden">
-          {/* Background Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A]/5 via-background to-[#40E0D0]/5" />
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#40E0D0]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#1E3A8A]/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-
+        {/* ── Hero ── */}
+        <section className="relative py-10 lg:py-16 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A]/6 via-background to-[#40E0D0]/6 pointer-events-none" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#40E0D0]/8 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
           <div className="container mx-auto px-4 lg:px-8 relative">
-            <div className="max-w-4xl mx-auto text-center">
-              <Badge variant="outline" className="mb-6 border-[#40E0D0]/30 text-[#40E0D0] bg-[#40E0D0]/5">
-                <CalcIcon className="w-3 h-3 mr-1" />
-                Free Online Tools
+            <div className="max-w-3xl mx-auto text-center">
+              <Badge variant="outline" className="mb-4 border-[#40E0D0]/40 text-[#40E0D0] bg-[#40E0D0]/5 px-3 py-1">
+                <CalcIcon className="w-3.5 h-3.5 mr-1.5" />
+                Vietnam Salary Calculator 2025 / 2026
               </Badge>
-
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                <span className="gradient-text">PIT & Insurance</span>
-                {' '}Calculator
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+                <span className="gradient-text">Gross ↔ Net</span> Salary Calculator
               </h1>
-
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Estimate your Personal Income Tax and Social Insurance contributions in Vietnam.
-                Based on official regulations from the General Department of Taxation.
+              <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+                Full employee &amp; employer breakdown — Social Insurance, Health Insurance,
+                Unemployment Insurance, Trade Union, and Personal Income Tax.
               </p>
-
-              {/* Quick Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                {[
-                  { label: 'Tax Years', value: '2025-2026', icon: Clock },
-                  { label: 'Tax Brackets', value: '7 Levels', icon: TrendingUp },
-                  { label: 'Deductions', value: 'Family + Insurance', icon: Users },
-                  { label: 'Accuracy', value: 'Official Rates', icon: CheckCircle2 },
-                ].map((stat, i) => (
-                  <Card key={i} className="p-4 bg-background/50 backdrop-blur-sm">
-                    <stat.icon className="w-5 h-5 text-[#40E0D0] mb-2 mx-auto" />
-                    <p className="text-sm text-muted-foreground">{stat.label}</p>
-                    <p className="font-semibold">{stat.value}</p>
-                  </Card>
-                ))}
-              </div>
             </div>
           </div>
         </section>
 
-        {/* Calculator Section */}
-        <section className="py-8 lg:py-12 bg-muted/30">
-          <div className="container mx-auto px-4 lg:px-8">
-            <Tabs defaultValue="pit" className="max-w-4xl mx-auto">
-              <TabsList className="grid w-full grid-cols-2 mb-8 h-12">
-                <TabsTrigger value="pit" className="flex items-center gap-2 text-base">
-                  <BadgePercent className="w-5 h-5" />
-                  PIT Calculator
-                </TabsTrigger>
-                <TabsTrigger value="insurance" className="flex items-center gap-2 text-base">
-                  <Shield className="w-5 h-5" />
-                  Insurance Calculator
-                </TabsTrigger>
-              </TabsList>
+        {/* ── Main Calculator ── */}
+        <section className="pb-16 lg:pb-24">
+          <div className="container mx-auto px-4 lg:px-8 max-w-5xl">
 
-              {/* PIT Calculator Tab */}
-              <TabsContent value="pit">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader className="bg-gradient-to-r from-[#1E3A8A]/5 to-[#40E0D0]/5 rounded-t-xl">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                          <BadgePercent className="w-6 h-6 text-[#40E0D0]" />
-                          Personal Income Tax Calculator
-                        </CardTitle>
-                        <CardDescription className="text-base mt-1">
-                          Calculate your PIT based on income, residency status, and applicable deductions
-                        </CardDescription>
-                      </div>
-                      <Button variant="outline" size="sm" onClick={resetPITCalculator} className="gap-1">
-                        <RefreshCcw className="w-4 h-4" />
-                        Reset
-                      </Button>
+            <Card className="shadow-xl border-0 overflow-hidden">
+              {/* Card header gradient bar */}
+              <div className="h-1 bg-gradient-to-r from-[#1E3A8A] via-[#2563EB] to-[#40E0D0]" />
+
+              <CardHeader className="bg-gradient-to-r from-[#1E3A8A]/5 to-[#40E0D0]/5 pb-4">
+                <div className="flex items-center justify-between flex-wrap gap-3">
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <BadgePercent className="w-5 h-5 text-[#40E0D0]" />
+                    Salary Calculator
+                  </CardTitle>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Profile selector */}
+                    <Select value={profile} onValueChange={(v) => { setProfile(v as TaxProfile); setResult(null) }}>
+                      <SelectTrigger className="w-36 h-8 text-xs">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="2025">Rules: 2025 (7-bracket)</SelectItem>
+                        <SelectItem value="2026">Rules: 2026 (5-bracket)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="sm" onClick={handleReset} className="h-8 text-xs gap-1">
+                      <RefreshCcw className="w-3.5 h-3.5" />Reset
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-5 lg:p-7 space-y-6">
+
+                {/* ── Direction toggle ── */}
+                <div className="flex rounded-xl border overflow-hidden">
+                  <button
+                    onClick={() => { setDirection('GROSS_TO_NET'); setResult(null) }}
+                    className={[
+                      'flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                      direction === 'GROSS_TO_NET'
+                        ? 'bg-[#1E3A8A] text-white'
+                        : 'hover:bg-muted/60 text-muted-foreground',
+                    ].join(' ')}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                    Gross → Net
+                  </button>
+                  <button
+                    onClick={() => { setDirection('NET_TO_GROSS'); setResult(null) }}
+                    className={[
+                      'flex-1 flex items-center justify-center gap-2 py-3 text-sm font-medium transition-colors',
+                      direction === 'NET_TO_GROSS'
+                        ? 'bg-[#1E3A8A] text-white'
+                        : 'hover:bg-muted/60 text-muted-foreground',
+                    ].join(' ')}
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                    Net → Gross
+                  </button>
+                </div>
+
+                {/* ── Salary input ── */}
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label className="text-sm font-medium">
+                      {direction === 'GROSS_TO_NET' ? 'Gross' : 'Net (Desired)'} Salary
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder={currency === 'VND' ? 'e.g. 50000000' : 'e.g. 2000'}
+                        value={salaryInput}
+                        onChange={(e) => setSalaryInput(e.target.value)}
+                        className="h-11"
+                      />
+                      <Select value={currency} onValueChange={(v) => setCurrency(v as 'VND' | 'USD')}>
+                        <SelectTrigger className="w-24 h-11">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="VND">VND</SelectItem>
+                          <SelectItem value="USD">USD</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    {/* Row 1: Period, Residency, Contract */}
-                    <div className="grid sm:grid-cols-3 gap-6">
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium">Calculation Period</Label>
-                        <RadioGroup
-                          value={calculationPeriod}
-                          onValueChange={(v) => setCalculationPeriod(v as 'monthly' | 'yearly')}
-                          className="flex gap-4"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="monthly" id="monthly" />
-                            <Label htmlFor="monthly" className="font-normal cursor-pointer">Monthly</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="yearly" id="yearly" />
-                            <Label htmlFor="yearly" className="font-normal cursor-pointer">Yearly</Label>
-                          </div>
-                        </RadioGroup>
-                      </div>
-
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium">Tax Residency Status</Label>
-                        <RadioGroup
-                          value={taxResidency}
-                          onValueChange={(v) => setTaxResidency(v as 'resident' | 'non-resident')}
-                          className="flex gap-4"
-                          disabled={contractType === 'shortTerm'}
-                        >
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="resident" id="resident" />
-                            <Label htmlFor="resident" className="font-normal cursor-pointer">Resident</Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <RadioGroupItem value="non-resident" id="non-resident" />
-                            <Label htmlFor="non-resident" className="font-normal cursor-pointer">Non-Res.</Label>
-                          </div>
-                        </RadioGroup>
-                        {contractType === 'shortTerm' && (
-                          <p className="text-xs text-muted-foreground">Short-term contracts use flat rate</p>
-                        )}
-                      </div>
-
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium">Contract Type</Label>
-                        <Select value={contractType} onValueChange={(v) => setContractType(v as 'longTerm' | 'shortTerm')}>
-                          <SelectTrigger className="w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="longTerm">Long-term (≥3 months)</SelectItem>
-                            <SelectItem value="shortTerm">Short-term (&lt;3 months)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                    {currency === 'VND' && salaryInput && parseFloat(salaryInput) > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        ≈ {fmtUSD(parseFloat(salaryInput), rate)} at {parseInt(exchangeRate).toLocaleString()} VND/USD
+                      </p>
+                    )}
+                  </div>
+                  {currency === 'USD' && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Exchange Rate (VND/USD)</Label>
+                      <Input
+                        type="number"
+                        value={exchangeRate}
+                        onChange={(e) => setExchangeRate(e.target.value)}
+                        className="h-11"
+                      />
                     </div>
+                  )}
+                </div>
 
-                    <Separator />
+                <Separator />
 
-                    {/* Row 2: Income, Months, Tax Year */}
-                    <div className="grid sm:grid-cols-3 gap-6">
-                      <div className="space-y-3">
-                        <Label htmlFor="grossIncome" className="text-sm font-medium">
-                          {calculationPeriod === 'monthly' ? 'Monthly' : 'Annual'} Gross Income (VND)
-                        </Label>
-                        <Input
-                          id="grossIncome"
-                          type="number"
-                          placeholder="e.g., 50000000"
-                          value={grossIncome}
-                          onChange={(e) => setGrossIncome(e.target.value)}
-                          className="h-11"
-                        />
-                      </div>
+                {/* ── Options grid ── */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-                      <div className="space-y-3">
-                        <Label htmlFor="monthsWorked" className="text-sm font-medium">Months Worked</Label>
-                        <Select value={monthsWorked} onValueChange={setMonthsWorked}>
-                          <SelectTrigger className="h-11 w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[...Array(12)].map((_, i) => (
-                              <SelectItem key={i + 1} value={(i + 1).toString()}>
-                                {i + 1} {i === 0 ? 'month' : 'months'}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                  {/* Nationality */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-muted-foreground" />
+                      Nationality
+                    </Label>
+                    <Select value={nationality} onValueChange={(v) => setNationality(v as Nationality)}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="VIETNAMESE">Vietnamese</SelectItem>
+                        <SelectItem value="EXPAT">Expat / Foreign</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {nationality === 'EXPAT' && (
+                      <p className="text-xs text-[#40E0D0]">Unemployment Insurance waived for expats</p>
+                    )}
+                  </div>
 
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium">Tax Year</Label>
-                        <Select value={taxYear} onValueChange={(v) => setTaxYear(v as '2025' | '2026')}>
-                          <SelectTrigger className="h-11 w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="2025">2025</SelectItem>
-                            <SelectItem value="2026">2026</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                  {/* PIT Method */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-1.5">
+                      <BadgePercent className="w-3.5 h-3.5 text-muted-foreground" />
+                      PIT Method
+                    </Label>
+                    <Select value={pitMethod} onValueChange={(v) => setPitMethod(v as PitMethod)}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PROGRESSIVE">Progressive (standard)</SelectItem>
+                        <SelectItem value="FIXED_10">Fixed 10% (withholding)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {pitMethod === 'FIXED_10' && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400">⚠ Assumed logic — verify with employer</p>
+                    )}
+                  </div>
+
+                  {/* Zone */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                      Employer Zone
+                    </Label>
+                    <Select value={zone.toString()} onValueChange={(v) => setZone(parseInt(v) as Zone)}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">Zone 1 — HCM/Hanoi (5,310,000)</SelectItem>
+                        <SelectItem value="2">Zone 2 — Provincial cities (4,730,000)</SelectItem>
+                        <SelectItem value="3">Zone 3 — Districts (4,140,000)</SelectItem>
+                        <SelectItem value="4">Zone 4 — Rural areas (3,700,000)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      UI cap: {fmtVND(UI_CAP_BY_ZONE[zone])}
+                    </p>
+                  </div>
+
+                  {/* Dependants */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5 text-muted-foreground" />
+                      Dependants
+                    </Label>
+                    <Select value={dependants} onValueChange={setDependants}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[...Array(10)].map((_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {i} {i === 1 ? 'dependant' : 'dependants'}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      {fmtVND(cfg.dependantDeduction)}/person/month
+                    </p>
+                  </div>
+
+                  {/* Insurance basis */}
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium flex items-center gap-1.5">
+                      <Shield className="w-3.5 h-3.5 text-muted-foreground" />
+                      Insurance Basis
+                    </Label>
+                    <Select value={insuranceType} onValueChange={(v) => setInsuranceType(v as InsuranceType)}>
+                      <SelectTrigger className="h-10">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="FULL_SALARY">Full Salary</SelectItem>
+                        <SelectItem value="OTHER">Other (custom)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Custom insurance salary */}
+                  {insuranceType === 'OTHER' && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Insurance Salary Base ({currency})</Label>
+                      <Input
+                        type="number"
+                        placeholder={currency === 'VND' ? 'e.g. 30000000' : 'e.g. 1200'}
+                        value={customInsurance}
+                        onChange={(e) => setCustomInsurance(e.target.value)}
+                        className="h-10"
+                      />
                     </div>
+                  )}
 
-                    <Separator />
+                </div>
 
-                    {/* Row 3: Dependants & Insurance */}
-                    <div className="grid sm:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <Label htmlFor="dependants" className="text-sm font-medium">Number of Dependants</Label>
-                        <Select value={dependants} onValueChange={setDependants}>
-                          <SelectTrigger className="h-11 w-full">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {[...Array(10)].map((_, i) => (
-                              <SelectItem key={i} value={i.toString()}>
-                                {i} {i === 1 ? 'dependant' : 'dependants'}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Info className="w-3 h-3" />
-                          Deduction: {formatCurrency(taxYear === '2025' ? DEDUCTIONS_2025.dependant : DEDUCTIONS_2026.dependant)}/month
-                        </p>
-                      </div>
+                {/* Info alert */}
+                <Alert className="bg-[#1E3A8A]/5 border-[#1E3A8A]/20 py-3">
+                  <Info className="w-4 h-4 text-[#1E3A8A] shrink-0" />
+                  <AlertDescription className="text-xs text-muted-foreground">
+                    <strong className="text-foreground">{profile === '2026' ? '2026 rules' : '2025 rules'}:</strong>{' '}
+                    Personal deduction {fmtVND(cfg.personalDeduction)}/month
+                    {' '}+{' '}
+                    {fmtVND(cfg.dependantDeduction)}/dependant/month
+                    {profile === '2026' && (
+                      <span className="ml-1 text-[#40E0D0]">• 5-bracket PIT (updated Jan 2026)</span>
+                    )}
+                  </AlertDescription>
+                </Alert>
 
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <Label className="text-sm font-medium">Include Insurance Deductions</Label>
-                          <Switch
-                            checked={includeInsurance}
-                            onCheckedChange={setIncludeInsurance}
-                            disabled={taxResidency === 'non-resident' || contractType === 'shortTerm'}
-                          />
+                {error && (
+                  <Alert variant="destructive" className="py-3">
+                    <AlertCircle className="w-4 h-4" />
+                    <AlertDescription>{error}</AlertDescription>
+                  </Alert>
+                )}
+
+                {/* ── Calculate button ── */}
+                <Button
+                  onClick={handleCalculate}
+                  className="w-full h-12 text-base bg-[#1E3A8A] hover:bg-[#1E3A8A]/90 text-white font-semibold"
+                  size="lg"
+                >
+                  <CalcIcon className="w-5 h-5 mr-2" />
+                  Calculate
+                </Button>
+
+                {/* ── Results ── */}
+                {result && (
+                  <div className="space-y-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-300">
+
+                    {/* Summary bar */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {direction === 'NET_TO_GROSS' && computedGross != null && (
+                        <div className="p-4 rounded-xl bg-[#1E3A8A]/8 border border-[#1E3A8A]/15 text-center col-span-2 sm:col-span-4">
+                          <p className="text-xs text-muted-foreground mb-1">Required Gross Salary</p>
+                          <p className="text-2xl font-bold gradient-text">{fmtMoney(computedGross, currency, rate)}</p>
+                          {currency === 'USD' && (
+                            <p className="text-xs text-muted-foreground mt-0.5">{fmtVND(computedGross)}</p>
+                          )}
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          Social Insurance (8%) + Health Insurance (1.5%)
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Max cap: {formatCurrency(MAX_SI_SALARY)}
-                        </p>
-                      </div>
+                      )}
+                      <SummaryCard
+                        label="Gross Salary"
+                        value={fmtMoney(result.employee.grossSalary, currency, rate)}
+                        sub={currency === 'USD' ? fmtVND(result.employee.grossSalary) : undefined}
+                      />
+                      <SummaryCard
+                        label="Net Salary"
+                        value={fmtMoney(result.employee.netSalary, currency, rate)}
+                        sub={currency === 'USD' ? fmtVND(result.employee.netSalary) : undefined}
+                        highlight
+                      />
+                      <SummaryCard
+                        label="Total PIT"
+                        value={fmtMoney(result.employee.pit, currency, rate)}
+                        sub={`${pct(result.employee.effectiveRate)} effective`}
+                      />
+                      <SummaryCard
+                        label="Employer Cost"
+                        value={fmtMoney(result.employer.totalEmployerCost, currency, rate)}
+                        sub={currency === 'USD' ? fmtVND(result.employer.totalEmployerCost) : undefined}
+                      />
                     </div>
 
-                    {/* Tax Year Info */}
-                    <Alert className="bg-[#1E3A8A]/5 border-[#1E3A8A]/20">
-                      <Info className="w-4 h-4 text-[#1E3A8A]" />
-                      <AlertTitle className="text-[#1E3A8A]">Tax Year {taxYear} Deductions</AlertTitle>
-                      <AlertDescription className="text-sm">
-                        Personal deduction: {formatCurrency(taxYear === '2025' ? DEDUCTIONS_2025.taxpayer : DEDUCTIONS_2026.taxpayer)}/month
-                        <span className="mx-2">•</span>
-                        Dependant: {formatCurrency(taxYear === '2025' ? DEDUCTIONS_2025.dependant : DEDUCTIONS_2026.dependant)}/month
+                    {/* Detailed breakdowns */}
+                    <Tabs defaultValue="employee" className="w-full">
+                      <TabsList className="grid grid-cols-3 w-full mb-4">
+                        <TabsTrigger value="employee" className="text-xs sm:text-sm">
+                          Employee Breakdown
+                        </TabsTrigger>
+                        <TabsTrigger value="employer" className="text-xs sm:text-sm">
+                          Employer Cost
+                        </TabsTrigger>
+                        <TabsTrigger value="pit" className="text-xs sm:text-sm">
+                          PIT Detail
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Employee breakdown */}
+                      <TabsContent value="employee">
+                        <Card className="border shadow-sm">
+                          <CardContent className="p-4 space-y-0.5">
+                            <Row label="Gross Salary" value={fmtMoney(result.employee.grossSalary, currency, rate)} bold />
+                            <Separator className="my-2" />
+                            <Row
+                              label="Social Insurance (8%)"
+                              value={`− ${fmtMoney(result.employee.employeeSI, currency, rate)}`}
+                              sub={`cap ${fmtVND(SI_CAP_BASE)}`}
+                              indent negative
+                            />
+                            <Row
+                              label="Health Insurance (1.5%)"
+                              value={`− ${fmtMoney(result.employee.employeeHI, currency, rate)}`}
+                              sub={`cap ${fmtVND(HI_CAP_BASE)}`}
+                              indent negative
+                            />
+                            <Row
+                              label={`Unemployment Insurance ${nationality === 'EXPAT' ? '(waived)' : '(1%)'}`}
+                              value={nationality === 'EXPAT' ? '—' : `− ${fmtMoney(result.employee.employeeUI, currency, rate)}`}
+                              sub={nationality === 'EXPAT' ? undefined : `cap ${fmtVND(UI_CAP_BY_ZONE[zone])}`}
+                              indent negative={nationality !== 'EXPAT'}
+                            />
+                            <Separator className="my-2" />
+                            <Row
+                              label="Salary Before Tax"
+                              value={fmtMoney(result.employee.salaryBeforeTax, currency, rate)}
+                              bold
+                            />
+                            <Separator className="my-2" />
+                            <Row
+                              label="Personal Deduction"
+                              value={`− ${fmtMoney(result.employee.personalDeduction, currency, rate)}`}
+                              indent negative
+                            />
+                            {result.employee.dependantDeduction > 0 && (
+                              <Row
+                                label={`Dependant Deduction (×${dependants})`}
+                                value={`− ${fmtMoney(result.employee.dependantDeduction, currency, rate)}`}
+                                indent negative
+                              />
+                            )}
+                            <Separator className="my-2" />
+                            <Row
+                              label="Taxable Salary"
+                              value={fmtMoney(result.employee.taxableSalary, currency, rate)}
+                              bold
+                            />
+                            <Row
+                              label={`Personal Income Tax ${pitMethod === 'FIXED_10' ? '(10% fixed)' : '(progressive)'}`}
+                              value={`− ${fmtMoney(result.employee.pit, currency, rate)}`}
+                              negative bold={false}
+                            />
+                            <Separator className="my-2" />
+                            <Row
+                              label="Net Salary"
+                              value={fmtMoney(result.employee.netSalary, currency, rate)}
+                              bold highlight
+                              color="text-[#1E3A8A] dark:text-[#60a5fa]"
+                            />
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* Employer cost */}
+                      <TabsContent value="employer">
+                        <Card className="border shadow-sm">
+                          <CardContent className="p-4 space-y-0.5">
+                            <Row label="Gross Salary" value={fmtMoney(result.employer.grossSalary, currency, rate)} bold />
+                            <Separator className="my-2" />
+                            <Row
+                              label="Social Insurance (17.5%)"
+                              value={`+ ${fmtMoney(result.employer.employerSI, currency, rate)}`}
+                              sub={`cap ${fmtVND(SI_CAP_BASE)}`}
+                              indent
+                            />
+                            <Row
+                              label="Health Insurance (3%)"
+                              value={`+ ${fmtMoney(result.employer.employerHI, currency, rate)}`}
+                              sub={`cap ${fmtVND(HI_CAP_BASE)}`}
+                              indent
+                            />
+                            <Row
+                              label={`Unemployment Insurance ${nationality === 'EXPAT' ? '(waived)' : '(1%)'}`}
+                              value={nationality === 'EXPAT' ? '—' : `+ ${fmtMoney(result.employer.employerUI, currency, rate)}`}
+                              sub={nationality === 'EXPAT' ? undefined : `cap ${fmtVND(UI_CAP_BY_ZONE[zone])}`}
+                              indent
+                            />
+                            <Row
+                              label="Trade Union (2%)"
+                              value={`+ ${fmtMoney(result.employer.tradeUnion, currency, rate)}`}
+                              sub={`cap ${fmtVND(TU_CAP_BASE)}`}
+                              indent
+                            />
+                            <Separator className="my-2" />
+                            <Row
+                              label="Total Employer Cost"
+                              value={fmtMoney(result.employer.totalEmployerCost, currency, rate)}
+                              bold highlight
+                              color="text-[#1E3A8A] dark:text-[#60a5fa]"
+                            />
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+
+                      {/* PIT detail */}
+                      <TabsContent value="pit">
+                        <Card className="border shadow-sm">
+                          <CardContent className="p-4">
+                            {result.pitBrackets.length === 0 ? (
+                              <p className="text-sm text-muted-foreground text-center py-4">
+                                Taxable salary is zero — no PIT applies.
+                              </p>
+                            ) : (
+                              <div className="space-y-1">
+                                <div className="grid grid-cols-4 gap-2 text-xs text-muted-foreground font-medium px-3 pb-1">
+                                  <span className="col-span-2">Bracket</span>
+                                  <span className="text-right">Taxable</span>
+                                  <span className="text-right">Tax</span>
+                                </div>
+                                {result.pitBrackets.map((b, i) => (
+                                  <div key={i} className="grid grid-cols-4 gap-2 text-sm py-2 px-3 rounded-lg hover:bg-muted/40">
+                                    <span className="col-span-2 text-muted-foreground">
+                                      {b.bracket}
+                                      <Badge variant="outline" className="ml-2 text-xs py-0">{b.rate}%</Badge>
+                                    </span>
+                                    <span className="text-right tabular-nums text-xs">{fmtVND(b.taxable)}</span>
+                                    <span className="text-right tabular-nums text-xs font-medium text-[#1E3A8A] dark:text-[#60a5fa]">
+                                      {fmtVND(b.tax)}
+                                    </span>
+                                  </div>
+                                ))}
+                                <Separator className="my-2" />
+                                <div className="grid grid-cols-4 gap-2 text-sm py-2 px-3 rounded-lg bg-[#1E3A8A]/8 border border-[#1E3A8A]/15">
+                                  <span className="col-span-2 font-semibold">Total PIT</span>
+                                  <span className="text-right tabular-nums text-xs">{fmtVND(result.employee.taxableSalary)}</span>
+                                  <span className="text-right tabular-nums text-sm font-bold text-[#1E3A8A] dark:text-[#60a5fa]">
+                                    {fmtVND(result.employee.pit)}
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </TabsContent>
+                    </Tabs>
+
+                    {/* Disclaimer */}
+                    <Alert className="py-3 bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800">
+                      <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                      <AlertDescription className="text-xs text-amber-700 dark:text-amber-300">
+                        Estimates only. Actual amounts depend on your complete income structure, employer agreements,
+                        and tax authority assessments. Consult a qualified tax professional for finalisation.
                       </AlertDescription>
                     </Alert>
 
-                    {/* Calculate Button */}
-                    <Button
-                      onClick={handleCalculatePIT}
-                      className="w-full h-12 text-base bg-[#1E3A8A] hover:bg-[#1E3A8A]/90 text-white"
-                      size="lg"
-                    >
-                      <CalcIcon className="w-5 h-5 mr-2" />
-                      Calculate Tax Estimate
-                    </Button>
+                  </div>
+                )}
 
-                    {/* Results */}
-                    {showResults && pitResults && (
-                      <div className="space-y-6 pt-6 border-t">
-                        <h3 className="text-lg font-semibold flex items-center gap-2">
-                          <Sparkles className="w-5 h-5 text-[#40E0D0]" />
-                          Calculation Results
-                        </h3>
+              </CardContent>
+            </Card>
 
-                        {/* Summary Cards */}
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                          <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground mb-1">Annual Gross Income</p>
-                            <p className="text-xl font-bold gradient-text">{formatCurrency(pitResults.grossIncome)}</p>
-                          </div>
-                          <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground mb-1">Total Deductions</p>
-                            <p className="text-xl font-bold">{formatCurrency(pitResults.totalDeductions)}</p>
-                          </div>
-                          <div className="p-4 rounded-lg bg-[#40E0D0]/10 border border-[#40E0D0]/30">
-                            <p className="text-xs text-muted-foreground mb-1">Annual PIT</p>
-                            <p className="text-xl font-bold text-[#40E0D0]">{formatCurrency(pitResults.annualPIT)}</p>
-                          </div>
-                          <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground mb-1">Effective Rate</p>
-                            <p className="text-xl font-bold">{pitResults.effectiveRate.toFixed(2)}%</p>
-                          </div>
-                        </div>
+            {/* ── Reference Tables ── */}
+            <div className="mt-10 grid md:grid-cols-2 gap-6">
 
-                        {/* Deduction Breakdown */}
-                        {pitResults.personalRelief > 0 && (
-                          <div className="p-4 rounded-lg bg-muted/30 space-y-2">
-                            <h4 className="font-medium text-sm">Deduction Breakdown</h4>
-                            <div className="grid sm:grid-cols-3 gap-4 text-sm">
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Personal Relief:</span>
-                                <span className="font-medium">{formatCurrency(pitResults.personalRelief)}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Dependant Relief:</span>
-                                <span className="font-medium">{formatCurrency(pitResults.dependantRelief)}</span>
-                              </div>
-                              <div className="flex justify-between">
-                                <span className="text-muted-foreground">Insurance:</span>
-                                <span className="font-medium">{formatCurrency(pitResults.insuranceDeduction)}</span>
-                              </div>
-                            </div>
-                            <Separator className="my-2" />
-                            <div className="flex justify-between text-sm">
-                              <span className="font-medium">Taxable Income:</span>
-                              <span className="font-bold">{formatCurrency(pitResults.taxableIncome)}</span>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Tax Bracket Breakdown */}
-                        {pitResults.breakdown.length > 0 && (
-                          <div className="space-y-3">
-                            <h4 className="font-semibold text-sm flex items-center gap-2">
-                              <TrendingUp className="w-4 h-4 text-[#40E0D0]" />
-                              Tax Bracket Breakdown (Progressive Tax)
-                            </h4>
-                            <div className="space-y-2 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                              {pitResults.breakdown.map((item, i) => (
-                                <div
-                                  key={i}
-                                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                                >
-                                  <div className="flex items-center gap-3">
-                                    <Badge variant="outline" className="w-6 h-6 rounded-full p-0 flex items-center justify-center text-xs">
-                                      {item.level}
-                                    </Badge>
-                                    <span className="text-sm text-muted-foreground">{item.bracket}</span>
-                                  </div>
-                                  <div className="flex gap-6 text-sm pl-9 sm:pl-0">
-                                    <span className="text-muted-foreground">Rate: <span className="font-medium text-foreground">{item.rate}%</span></span>
-                                    <span className="text-muted-foreground">Taxable: <span className="font-medium text-foreground">{formatCurrency(item.taxable)}</span></span>
-                                    <span className="font-medium text-[#40E0D0]">Tax: {formatCurrency(item.tax)}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        <Alert>
-                          <AlertCircle className="w-4 h-4" />
-                          <AlertTitle>Disclaimer</AlertTitle>
-                          <AlertDescription>
-                            This is a preliminary estimate only. Actual tax liability depends on your complete income structure,
-                            applicable tax treaties, and other factors. Contact us for expert finalization services.
-                          </AlertDescription>
-                        </Alert>
-
-                        {/* CTA for Expert Review */}
-                        <Card className="bg-gradient-to-r from-[#1E3A8A] to-[#1E3A8A]/80 text-white">
-                          <CardContent className="p-6">
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                              <div>
-                                <h4 className="font-semibold text-lg mb-1">Need Expert Tax Review?</h4>
-                                <p className="text-sm text-white/80">
-                                  Our certified tax specialists can help ensure accurate PIT finalization and maximize your deductions.
-                                </p>
-                              </div>
-                              <Button asChild className="bg-[#40E0D0] text-[#1E3A8A] hover:bg-[#40E0D0]/90 shrink-0">
-                                <Link href="#contact">
-                                  <Phone className="w-4 h-4 mr-2" />
-                                  Get Expert Review
-                                </Link>
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Insurance Calculator Tab */}
-              <TabsContent value="insurance">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader className="bg-gradient-to-r from-[#40E0D0]/5 to-[#1E3A8A]/5 rounded-t-xl">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="flex items-center gap-2 text-xl">
-                          <Shield className="w-6 h-6 text-[#40E0D0]" />
-                          Insurance Contribution Calculator
-                        </CardTitle>
-                        <CardDescription className="text-base mt-1">
-                          Calculate your monthly mandatory social insurance contributions
-                        </CardDescription>
-                      </div>
-                      <Button variant="outline" size="sm" onClick={resetInsuranceCalculator} className="gap-1">
-                        <RefreshCcw className="w-4 h-4" />
-                        Reset
-                      </Button>
+              {/* PIT brackets */}
+              <Card className="shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-[#40E0D0]" />
+                    PIT Brackets — {profile === '2026' ? '2026 (5-bracket)' : '2025 (7-bracket)'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0">
+                  <div className="space-y-1">
+                    <div className="grid grid-cols-3 text-xs text-muted-foreground font-medium px-2 pb-1">
+                      <span>Monthly Income</span>
+                      <span className="text-right">Rate</span>
+                      <span className="text-right">Tax on Bracket</span>
                     </div>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    <div className="grid sm:grid-cols-2 gap-6">
-                      <div className="space-y-3">
-                        <Label htmlFor="salaryBase" className="text-sm font-medium">
-                          Salary Base for Insurance (VND)
-                        </Label>
-                        <Input
-                          id="salaryBase"
-                          type="number"
-                          placeholder="e.g., 50000000"
-                          value={salaryBase}
-                          onChange={(e) => {
-                            setSalaryBase(e.target.value)
-                            setShowInsuranceResults(false)
-                          }}
-                          className="h-11"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Maximum cap: {formatCurrency(MAX_SI_SALARY)} (20 × {formatCurrency(BASE_SALARY)})
-                        </p>
-                      </div>
-
-                      <div className="space-y-3">
-                        <Label className="text-sm font-medium">Insurance Rates (Employee Contribution)</Label>
-                        <div className="space-y-2 p-4 rounded-lg bg-muted/50">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Social Insurance (SI)</span>
-                            <span className="font-medium">8%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Health Insurance (HI)</span>
-                            <span className="font-medium">1.5%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Unemployment Insurance (UI)</span>
-                            <span className="font-medium">1%</span>
-                          </div>
-                          <Separator className="my-2" />
-                          <div className="flex justify-between text-sm font-medium">
-                            <span>Total Employee Contribution</span>
-                            <span className="text-[#40E0D0]">10.5%</span>
-                          </div>
+                    {cfg.brackets.map((b, i) => {
+                      const from = b.min / 1_000_000
+                      const to   = b.max === Infinity ? '∞' : (b.max / 1_000_000).toFixed(0)
+                      const width = b.max === Infinity ? null : b.max - b.min
+                      return (
+                        <div key={i} className="grid grid-cols-3 text-xs py-2 px-2 rounded hover:bg-muted/40">
+                          <span className="text-muted-foreground">
+                            {from === 0 ? '0' : `${from}M`} – {to === '∞' ? '∞' : `${to}M`}
+                          </span>
+                          <span className="text-right font-medium">{(b.rate * 100).toFixed(0)}%</span>
+                          <span className="text-right text-muted-foreground">
+                            {width ? fmtVND(width * b.rate) : '35% on excess'}
+                          </span>
                         </div>
-                      </div>
-                    </div>
-
-                    {/* Calculate Button */}
-                    <Button
-                      onClick={handleCalculateInsurance}
-                      className="w-full h-12 text-base bg-[#1E3A8A] hover:bg-[#1E3A8A]/90 text-white"
-                      size="lg"
-                      disabled={!insuranceResults}
-                    >
-                      <CalcIcon className="w-5 h-5 mr-2" />
-                      Calculate Insurance
-                    </Button>
-
-                    {/* Results */}
-                    {showInsuranceResults && insuranceResults && (
-                      <div className="space-y-6 pt-6 border-t">
-                        <h3 className="text-lg font-semibold flex items-center gap-2">
-                          <Sparkles className="w-5 h-5 text-[#40E0D0]" />
-                          Monthly Insurance Contributions
-                        </h3>
-
-                        {insuranceResults.isCapped && (
-                          <Alert className="bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-800">
-                            <Info className="w-4 h-4 text-amber-600" />
-                            <AlertTitle className="text-amber-800 dark:text-amber-200">Salary Capped</AlertTitle>
-                            <AlertDescription className="text-sm text-amber-700 dark:text-amber-300">
-                              Your salary exceeds the maximum cap. Insurance is calculated on {formatCurrency(MAX_SI_SALARY)} instead of {formatCurrency(insuranceResults.salary)}.
-                            </AlertDescription>
-                          </Alert>
-                        )}
-
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground mb-1">Social Insurance (8%)</p>
-                            <p className="text-xl font-bold">{formatCurrency(insuranceResults.socialInsurance)}</p>
-                          </div>
-                          <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground mb-1">Health Insurance (1.5%)</p>
-                            <p className="text-xl font-bold">{formatCurrency(insuranceResults.healthInsurance)}</p>
-                          </div>
-                          <div className="p-4 rounded-lg bg-muted/50">
-                            <p className="text-xs text-muted-foreground mb-1">Unemployment Insurance (1%)</p>
-                            <p className="text-xl font-bold">{formatCurrency(insuranceResults.unemploymentInsurance)}</p>
-                          </div>
-                          <div className="p-4 rounded-lg bg-[#40E0D0]/10 border border-[#40E0D0]/30">
-                            <p className="text-xs text-muted-foreground mb-1">Total Monthly Contribution</p>
-                            <p className="text-xl font-bold text-[#40E0D0]">{formatCurrency(insuranceResults.total)}</p>
-                          </div>
-                        </div>
-
-                        {/* Annual Summary */}
-                        <div className="p-4 rounded-lg bg-muted/30 space-y-2">
-                          <h4 className="font-medium text-sm">Annual Summary</h4>
-                          <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Monthly Contribution:</span>
-                              <span className="font-medium">{formatCurrency(insuranceResults.total)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Annual (12 months):</span>
-                              <span className="font-bold text-[#40E0D0]">{formatCurrency(insuranceResults.total * 12)}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <Alert>
-                          <AlertCircle className="w-4 h-4" />
-                          <AlertTitle>Important Note</AlertTitle>
-                          <AlertDescription>
-                            These are employee contributions. Employers also contribute additional amounts
-                            (Social: 17%, Health: 3%, Unemployment: 1%). Foreign employees may have different
-                            requirements based on work permit duration.
-                          </AlertDescription>
-                        </Alert>
-
-                        {/* CTA for Expert Review */}
-                        <Card className="bg-gradient-to-r from-[#1E3A8A] to-[#1E3A8A]/80 text-white">
-                          <CardContent className="p-6">
-                            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                              <div>
-                                <h4 className="font-semibold text-lg mb-1">Questions About Insurance?</h4>
-                                <p className="text-sm text-white/80">
-                                  Our experts can help clarify insurance obligations for foreign workers in Vietnam.
-                                </p>
-                              </div>
-                              <Button asChild className="bg-[#40E0D0] text-[#1E3A8A] hover:bg-[#40E0D0]/90 shrink-0">
-                                <Link href="#contact">
-                                  <Phone className="w-4 h-4 mr-2" />
-                                  Contact Us
-                                </Link>
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
-        </section>
-
-        {/* Tax Brackets Reference */}
-        <section className="py-12 lg:py-16">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-10">
-                <Badge variant="outline" className="mb-4 border-[#1E3A8A]/30 text-[#1E3A8A]">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  Reference
-                </Badge>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 gradient-text">
-                  Tax Brackets 2025 (Monthly)
-                </h2>
-                <p className="text-muted-foreground">
-                  Progressive Personal Income Tax rates for tax residents in Vietnam
-                </p>
-              </div>
-
-              <Card className="overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead className="bg-[#1E3A8A] text-white">
-                      <tr>
-                        <th className="px-6 py-4 text-left font-medium">Level</th>
-                        <th className="px-6 py-4 text-left font-medium">Monthly Income Range</th>
-                        <th className="px-6 py-4 text-center font-medium">Tax Rate</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {TAX_BRACKETS_2025.map((bracket, i) => (
-                        <tr key={i} className="hover:bg-muted/50 transition-colors">
-                          <td className="px-6 py-4">
-                            <Badge variant="outline" className="w-8 h-8 rounded-full p-0 flex items-center justify-center">
-                              {bracket.level}
-                            </Badge>
-                          </td>
-                          <td className="px-6 py-4">
-                            {bracket.maxIncome === Infinity
-                              ? `Over ${formatCurrency(bracket.minIncome)}`
-                              : `${formatCurrency(bracket.minIncome)} - ${formatCurrency(bracket.maxIncome)}`}
-                          </td>
-                          <td className="px-6 py-4 text-center">
-                            <span className="font-bold text-[#40E0D0]">{(bracket.rate * 100).toFixed(0)}%</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      )
+                    })}
+                  </div>
+                </CardContent>
               </Card>
-            </div>
-          </div>
-        </section>
 
-        {/* Official Sources Section */}
-        <section className="py-12 lg:py-16 bg-muted/30">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-10">
-                <Badge variant="outline" className="mb-4 border-[#1E3A8A]/30 text-[#1E3A8A]">
-                  <Scale className="w-3 h-3 mr-1" />
-                  Legal Basis
-                </Badge>
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 gradient-text">
-                  Official Sources & Regulations
-                </h2>
-                <p className="text-muted-foreground">
-                  All calculations based on official Vietnamese government regulations
-                </p>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#1E3A8A]/10 flex items-center justify-center shrink-0">
-                      <FileText className="w-6 h-6 text-[#1E3A8A]" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">National Legal Database</h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Official Vietnamese legal documents and regulations
-                      </p>
-                      <a
-                        href="https://vbpl.vn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-sm text-[#40E0D0] hover:underline"
-                      >
-                        vbpl.vn
-                        <ExternalLink className="w-3 h-3 ml-1" />
-                      </a>
+              {/* Insurance rates */}
+              <Card className="shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-[#40E0D0]" />
+                    Insurance Rates &amp; Caps
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-4 pt-0 space-y-4">
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Employee</p>
+                    <div className="space-y-1">
+                      {[
+                        { label: 'Social Insurance', rate: '8%', cap: fmtVND(SI_CAP_BASE) },
+                        { label: 'Health Insurance', rate: '1.5%', cap: fmtVND(HI_CAP_BASE) },
+                        { label: 'Unemployment Ins.', rate: '1%', cap: 'Zone min wage × 20' },
+                      ].map((r) => (
+                        <div key={r.label} className="grid grid-cols-3 text-xs py-1.5 px-2 rounded hover:bg-muted/40">
+                          <span className="text-muted-foreground">{r.label}</span>
+                          <span className="text-right font-medium">{r.rate}</span>
+                          <span className="text-right text-muted-foreground truncate">{r.cap}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </Card>
-
-                <Card className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-[#1E3A8A]/10 flex items-center justify-center shrink-0">
-                      <DollarSign className="w-6 h-6 text-[#1E3A8A]" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-1">General Department of Taxation</h3>
-                      <p className="text-sm text-muted-foreground mb-3">
-                        Official tax guidance and updates from Vietnam tax authority
-                      </p>
-                      <a
-                        href="https://gdt.gov.vn"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-sm text-[#40E0D0] hover:underline"
-                      >
-                        gdt.gov.vn
-                        <ExternalLink className="w-3 h-3 ml-1" />
-                      </a>
+                  <Separator />
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Employer</p>
+                    <div className="space-y-1">
+                      {[
+                        { label: 'Social Insurance', rate: '17.5%', cap: fmtVND(SI_CAP_BASE) },
+                        { label: 'Health Insurance', rate: '3%', cap: fmtVND(HI_CAP_BASE) },
+                        { label: 'Unemployment Ins.', rate: '1%', cap: 'Zone min wage × 20' },
+                        { label: 'Trade Union', rate: '2%', cap: fmtVND(TU_CAP_BASE) },
+                      ].map((r) => (
+                        <div key={r.label} className="grid grid-cols-3 text-xs py-1.5 px-2 rounded hover:bg-muted/40">
+                          <span className="text-muted-foreground">{r.label}</span>
+                          <span className="text-right font-medium">{r.rate}</span>
+                          <span className="text-right text-muted-foreground truncate">{r.cap}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </Card>
-              </div>
-
-              <Alert className="mt-8">
-                <Info className="w-4 h-4" />
-                <AlertTitle>Disclaimer</AlertTitle>
-                <AlertDescription>
-                  This calculator provides estimates based on current tax regulations. Actual tax liability may vary based on individual circumstances,
-                  tax treaties, and regulatory changes. For accurate tax finalization, please consult with our certified tax specialists.
-                </AlertDescription>
-              </Alert>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-12 lg:py-16">
-          <div className="container mx-auto px-4 lg:px-8">
-            <div className="max-w-4xl mx-auto">
-              <Card className="bg-gradient-to-r from-[#1E3A8A] to-[#4169E1] text-white overflow-hidden">
-                <CardContent className="p-8 lg:p-12 relative">
-                  <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                  <div className="relative">
-                    <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-                      <div className="text-center lg:text-left">
-                        <h2 className="text-2xl lg:text-3xl font-bold mb-3">
-                          Ready for Professional PIT Finalization?
-                        </h2>
-                        <p className="text-white/80 max-w-lg">
-                          Our certified tax experts ensure accurate PIT finalization, maximize deductions,
-                          and handle all paperwork for foreigners working in Vietnam.
-                        </p>
-                      </div>
-                      <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-                        <Button asChild size="lg" className="bg-[#40E0D0] text-[#1E3A8A] hover:bg-[#40E0D0]/90">
-                          <Link href="#contact">
-                            <Phone className="w-4 h-4 mr-2" />
-                            Book Consultation
-                          </Link>
-                        </Button>
-                        <Button asChild variant="outline" size="lg" className="border-2 border-white text-white bg-white/10 hover:bg-white hover:text-[#1E3A8A] font-semibold transition-all duration-300">
-                          <Link href="#services">
-                            View Services
-                            <ArrowRight className="w-4 h-4 ml-2" />
-                          </Link>
-                        </Button>
-                      </div>
+                  <Separator />
+                  <div>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">UI Cap by Zone (2026)</p>
+                    <div className="space-y-1">
+                      {([1, 2, 3, 4] as Zone[]).map((z) => (
+                        <div key={z} className="grid grid-cols-3 text-xs py-1.5 px-2 rounded hover:bg-muted/40">
+                          <span className="text-muted-foreground">Zone {z}</span>
+                          <span className="text-right font-medium">{fmtVND(ZONE_MIN_WAGES[z])}</span>
+                          <span className="text-right text-muted-foreground">Cap {fmtVND(UI_CAP_BY_ZONE[z])}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* CTA */}
+            <div className="mt-10 rounded-2xl bg-gradient-to-r from-[#1E3A8A] to-[#1E3A8A]/80 p-8 text-white text-center">
+              <Sparkles className="w-8 h-8 mx-auto mb-3 text-[#40E0D0]" />
+              <h3 className="text-xl font-bold mb-2">Need official PIT finalization?</h3>
+              <p className="text-white/80 mb-5 max-w-md mx-auto text-sm">
+                Estimates are not submissions. Let our experts handle your official annual PIT
+                finalization — ensuring compliance and maximizing any refund you are owed.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button asChild className="bg-[#40E0D0] text-[#1E3A8A] hover:bg-[#40E0D0]/90 font-semibold">
+                  <Link href="/contact">
+                    Get Expert Help <ChevronRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" className="bg-transparent border-white/30 text-white hover:bg-white/10">
+                  <Link href="/services">View Services</Link>
+                </Button>
+              </div>
+            </div>
+
           </div>
         </section>
       </main>
 
       <Footer />
+    </div>
+  )
+}
+
+// ─── Summary card ──────────────────────────────────────────────────────────────
+
+function SummaryCard({ label, value, sub, highlight }: {
+  label: string
+  value: string
+  sub?: string
+  highlight?: boolean
+}) {
+  return (
+    <div className={[
+      'p-4 rounded-xl text-center',
+      highlight
+        ? 'bg-[#1E3A8A]/10 border border-[#1E3A8A]/20'
+        : 'bg-muted/50',
+    ].join(' ')}>
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className={['font-bold tabular-nums', highlight ? 'text-lg text-[#1E3A8A] dark:text-[#60a5fa]' : 'text-base'].join(' ')}>
+        {value}
+      </p>
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   )
 }
