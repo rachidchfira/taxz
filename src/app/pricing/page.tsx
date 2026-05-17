@@ -463,11 +463,11 @@ export default function PricingPage() {
               {/* Contact Info */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-white/70">
                 <a
-                  href="mailto:contact@taxfinalizevn.com"
+                  href="mailto:contact@taxfinalization.com"
                   className="flex items-center gap-2 hover:text-[#40E0D0] transition-colors"
                 >
                   <Mail className="w-5 h-5" />
-                  <span>contact@taxfinalizevn.com</span>
+                  <span>contact@taxfinalization.com</span>
                 </a>
                 <span className="hidden sm:block text-white/30">|</span>
                 <a

@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: 'Vietnam PIT Services for Foreigners | TaxFinalization',
   description: 'Complete Vietnam Personal Income Tax services for expatriates: PIT finalization, tax residency assessment, departure clearance, and multi-employer cases.',
   keywords: ['Vietnam PIT service', 'expat tax Vietnam', 'PIT finalization Vietnam', 'tax residency Vietnam', 'foreigner tax service'],
+  alternates: { canonical: '/services' },
   openGraph: {
     title: 'Vietnam PIT Services — TaxFinalization',
     description: 'Expert PIT finalization, tax residency checks, and departure clearance for foreigners in Vietnam.',

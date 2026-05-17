@@ -1,0 +1,17 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#071827"/>
+  <rect x="56" y="56" width="1088" height="518" rx="28" fill="#0D2745" stroke="#40E0D0" stroke-opacity="0.34" stroke-width="2"/>
+  <circle cx="1000" cy="112" r="190" fill="#40E0D0" fill-opacity="0.12"/>
+  <circle cx="148" cy="512" r="220" fill="#1E3A8A" fill-opacity="0.46"/>
+  <g transform="translate(104 112)">
+    <rect width="88" height="88" rx="22" fill="#F7FBFF" fill-opacity="0.10" stroke="#40E0D0" stroke-opacity="0.5"/>
+    <path d="M61 24L36 64H24L49 24H61Z" fill="#FFFFFF"/>
+    <path d="M64 24H38L42 18H64V24Z" fill="#40E0D0"/>
+    <path d="M24 64H50L46 70H24V64Z" fill="#40E0D0"/>
+  </g>
+  <text x="104" y="258" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700">TaxFinalization</text>
+  <text x="104" y="334" fill="#A7F3ED" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="600">Vietnam PIT Finalization for Foreigners</text>
+  <text x="104" y="414" fill="#D8E7F4" font-family="Arial, Helvetica, sans-serif" font-size="30">PIT filing, residency checks, refunds, and departure clearance</text>
+  <text x="104" y="470" fill="#D8E7F4" font-family="Arial, Helvetica, sans-serif" font-size="26">Official-source-backed tax help in English</text>
+  <text x="104" y="535" fill="#40E0D0" font-family="Arial, Helvetica, sans-serif" font-size="24">taxfinalization.com</text>
+</svg>

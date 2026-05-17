@@ -42,7 +42,7 @@ A professional website for Personal Income Tax (PIT) finalization services in Vi
 
 3. **Configure Environment Variables** (Optional)
    - `DATABASE_URL`: Your database connection string
-   - `NEXT_PUBLIC_SITE_URL`: Your production URL
+   - `NEXT_PUBLIC_SITE_URL`: https://www.taxfinalization.com
    - `NEXT_PUBLIC_ZALO_NUMBER`: +84703027485
 
 4. **Deploy**
@@ -112,7 +112,7 @@ Update in `.env`:
 ```
 NEXT_PUBLIC_ZALO_NUMBER=+84703027485
 NEXT_PUBLIC_ZALO_LINK=https://zalo.me/84703027485
-NEXT_PUBLIC_EMAIL=contact@taxfinalizevn.com
+NEXT_PUBLIC_EMAIL=contact@taxfinalization.com
 ```
 
 ## 📊 Performance

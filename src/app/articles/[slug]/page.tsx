@@ -1,6 +1,4 @@
-'use client'
-
-import { useParams } from 'next/navigation'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -22,10 +20,59 @@ import {
 import { getArticleBySlug, articles } from '@/lib/articles'
 import { markdownToHtml } from '@/lib/markdown'
 import { notFound } from 'next/navigation'
+import { SITE_NAME, SITE_URL, absoluteUrl, jsonLd } from '@/lib/site'
 
-export default function ArticlePage() {
-  const params = useParams()
-  const slug = params.slug as string
+type ArticlePageProps = {
+  params: Promise<{ slug: string }>
+}
+
+export function generateStaticParams() {
+  return articles.map((article) => ({
+    slug: article.slug,
+  }))
+}
+
+export async function generateMetadata({
+  params,
+}: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params
+  const article = getArticleBySlug(slug)
+
+  if (!article) {
+    return {
+      title: `Article Not Found | ${SITE_NAME}`,
+    }
+  }
+
+  const url = absoluteUrl(`/articles/${article.slug}`)
+
+  return {
+    title: `${article.title} | ${SITE_NAME}`,
+    description: article.excerpt,
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url,
+      siteName: SITE_NAME,
+      type: 'article',
+      modifiedTime: article.lastUpdated,
+      authors: [SITE_NAME],
+      tags: [article.category, 'Vietnam PIT', 'expat tax Vietnam'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.title,
+      description: article.excerpt,
+      images: [absoluteUrl('/og-image.svg')],
+    },
+  }
+}
+
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const { slug } = await params
   const article = getArticleBySlug(slug)
 
   if (!article) {
@@ -42,8 +89,38 @@ export default function ArticlePage() {
     .filter(a => a.id !== article.id)
     .slice(0, 3)
 
+  const articleUrl = absoluteUrl(`/articles/${article.slug}`)
+  const articleStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    articleSection: article.category,
+    dateModified: article.lastUpdated,
+    inLanguage: 'en',
+    mainEntityOfPage: articleUrl,
+    author: {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+    },
+    publisher: {
+      '@type': 'Organization',
+      '@id': `${SITE_URL}/#organization`,
+      name: SITE_NAME,
+      logo: {
+        '@type': 'ImageObject',
+        url: absoluteUrl('/logo.svg'),
+      },
+    },
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLd(articleStructuredData)}
+      />
       <Header />
       
       <main className="py-8 lg:py-12">

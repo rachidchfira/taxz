@@ -751,7 +751,7 @@ export default function PITFinalizationPage() {
                 size="lg"
                 className="bg-white text-[#1E3A8A] hover:bg-white/90 font-medium px-8 py-6 text-lg group btn-premium"
               >
-                <Link href="mailto:contact@taxfinalizevn.com">
+                <Link href="mailto:contact@taxfinalization.com">
                   <Calendar className="w-5 h-5 mr-2" />
                   Book Consultation
                   <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />

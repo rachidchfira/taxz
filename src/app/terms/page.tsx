@@ -7,6 +7,7 @@ import { FileText, Scale, CheckCircle, AlertTriangle, Clock, RefreshCw, Mail } f
 export const metadata = {
   title: 'Terms of Service | TaxFinalization',
   description: 'Terms of Service for TaxFinalization - Vietnam PIT Finalization Service for Foreigners. Read our service agreement and terms of use.',
+  alternates: { canonical: '/terms' },
 }
 
 const sections = [
@@ -207,7 +208,7 @@ export default function TermsOfService() {
                         If you have questions about these Terms of Service, please contact us:
                       </p>
                       <div className="space-y-2 text-sm">
-                        <p><strong>Email:</strong> legal@taxfinalizevn.com</p>
+                        <p><strong>Email:</strong> legal@taxfinalization.com</p>
                         <p><strong>Phone:</strong> ZALO: +84703027485</p>
                       </div>
                     </div>

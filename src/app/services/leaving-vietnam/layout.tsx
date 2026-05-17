@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: 'Leaving Vietnam Tax Clearance — Departure PIT Finalization | TaxFinalization',
   description: 'Mandatory PIT finalization before leaving Vietnam. Fast-track clearance in 5–8 days. Includes departure tax assessment and potential refund recovery.',
   keywords: ['leaving Vietnam tax', 'Vietnam departure tax clearance', 'expat exit tax Vietnam', 'PIT before leaving Vietnam'],
+  alternates: { canonical: '/services/leaving-vietnam' },
   openGraph: { title: 'Leaving Vietnam Tax Clearance — TaxFinalization', description: 'Mandatory tax finalization before you leave Vietnam. Fast-track in 5–8 days.' },
 }
 

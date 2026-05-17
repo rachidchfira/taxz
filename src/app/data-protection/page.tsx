@@ -7,6 +7,7 @@ import { Shield, Lock, Server, FileCheck, AlertCircle, RefreshCw, Mail, External
 export const metadata = {
   title: 'Data Protection | TaxFinalization',
   description: 'Data Protection Policy for TaxFinalization - Learn about our commitment to protecting your personal and financial data in compliance with Vietnamese law.',
+  alternates: { canonical: '/data-protection' },
 }
 
 const protectionMeasures = [
@@ -320,7 +321,7 @@ export default function DataProtection() {
                         For data protection inquiries or to exercise your rights, contact our Data Protection Officer:
                       </p>
                       <div className="space-y-2 text-sm">
-                        <p><strong>Email:</strong> dpo@taxfinalizevn.com</p>
+                        <p><strong>Email:</strong> dpo@taxfinalization.com</p>
                         <p><strong>Phone:</strong> ZALO: +84703027485</p>
                         <p><strong>Response Time:</strong> Within 30 days of request</p>
                       </div>

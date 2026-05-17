@@ -651,7 +651,7 @@ export default function TaxRefundPage() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button asChild size="lg" className="btn-premium gradient-primary text-white font-semibold px-8 py-6 text-lg group">
-                <Link href="mailto:contact@taxfinalizevn.com?subject=Tax Refund Assessment Request">
+                <Link href="mailto:contact@taxfinalization.com?subject=Tax Refund Assessment Request">
                   <Calculator className="w-5 h-5 mr-2" />
                   Get Free Assessment
                   <ArrowRight className="w-5 h-5 ml-2 transition-transform group-hover:translate-x-1" />

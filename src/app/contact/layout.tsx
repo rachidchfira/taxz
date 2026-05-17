@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: 'Contact TaxFinalization — Get Tax Help Within 24 Hours',
   description: 'Contact TaxFinalization for expert Vietnam PIT help. Response within 24 hours. Available via ZALO, email, and consultation form.',
   keywords: ['contact Vietnam tax expert', 'Vietnam PIT help', 'expat tax consultation Vietnam', 'ZALO tax advisor Vietnam'],
+  alternates: { canonical: '/contact' },
   openGraph: {
     title: 'Contact TaxFinalization — 24-Hour Response',
     description: 'Get expert Vietnam PIT guidance. Contact us via ZALO or email — response within 24 hours.',

@@ -813,7 +813,7 @@ export default function LeavingVietnamPage() {
                   <FileText className="w-5 h-5 text-[#40E0D0]" />
                   <span className="font-medium">Email</span>
                 </div>
-                <p className="text-sm text-blue-200">tax@taxfinalizevn.com</p>
+                <p className="text-sm text-blue-200">tax@taxfinalization.com</p>
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
                 <div className="flex items-center justify-center gap-2 mb-2">

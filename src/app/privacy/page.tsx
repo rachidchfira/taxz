@@ -7,6 +7,7 @@ import { Shield, Lock, Eye, Database, Users, Bell, Mail, FileText } from 'lucide
 export const metadata = {
   title: 'Privacy Policy | TaxFinalization',
   description: 'Privacy Policy for TaxFinalization - Vietnam PIT Finalization Service for Foreigners. Learn how we collect, use, and protect your personal information.',
+  alternates: { canonical: '/privacy' },
 }
 
 const sections = [
@@ -64,7 +65,7 @@ While we take all reasonable precautions, no method of transmission over the int
 • **Portability**: Request your data in a machine-readable format
 • **Objection**: Object to processing for direct marketing purposes
 
-To exercise these rights, contact us at privacy@taxfinalizevn.com with "Data Rights Request" in the subject line.`
+To exercise these rights, contact us at privacy@taxfinalization.com with "Data Rights Request" in the subject line.`
   },
   {
     icon: Bell,
@@ -155,7 +156,7 @@ export default function PrivacyPolicy() {
                         please contact us:
                       </p>
                       <div className="space-y-2 text-sm">
-                        <p><strong>Email:</strong> privacy@taxfinalizevn.com</p>
+                        <p><strong>Email:</strong> privacy@taxfinalization.com</p>
                         <p><strong>Phone:</strong> ZALO: +84703027485</p>
                         <p><strong>Address:</strong> Ho Chi Minh City & Hanoi, Vietnam</p>
                       </div>

@@ -1,5 +1,4 @@
-'use client'
-
+import type { Metadata } from 'next'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
 import { FaqSection } from '@/components/sections/faq-section'
@@ -28,6 +27,10 @@ import {
   TrendingUp,
   ChevronRight
 } from 'lucide-react'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
 
 const services = [
   {

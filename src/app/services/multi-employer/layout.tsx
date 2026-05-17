@@ -4,6 +4,7 @@ export const metadata: Metadata = {
   title: 'Multi-Employer PIT Finalization Vietnam | TaxFinalization',
   description: 'Specialized PIT finalization for foreigners who worked for multiple employers in Vietnam. We consolidate all income sources and maximize deductions.',
   keywords: ['multi employer tax Vietnam', 'two jobs tax Vietnam', 'multiple income sources Vietnam PIT', 'expat job change tax Vietnam'],
+  alternates: { canonical: '/services/multi-employer' },
   openGraph: { title: 'Multi-Employer PIT Finalization — TaxFinalization', description: 'Specialized service for expats with multiple employers in Vietnam.' },
 }
 
