@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   creator: SITE_NAME,
   publisher: SITE_NAME,
   category: "tax services",
+  verification: {
+    google: "HPyWJbPWQxoHuFqqqQBmpBEnTDq15qR41ipMmVcgPPE",
+  },
   icons: {
     icon: "/logo.svg",
     shortcut: "/logo.svg",
