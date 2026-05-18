@@ -477,13 +477,13 @@ export default function AboutPage() {
                   <h3 className="text-xl font-semibold mb-6">Contact Information</h3>
 
                   <div className="space-y-4">
-                    <a href="mailto:contact@taxfinalization.com" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors">
+                    <a href="mailto:contact@taxfinalizevn.com" className="flex items-center gap-3 text-white/80 hover:text-white transition-colors">
                       <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
                         <Mail className="w-5 h-5" />
                       </div>
                       <div>
                         <div className="text-sm text-white/60">Email</div>
-                        <div className="font-medium">contact@taxfinalization.com</div>
+                        <div className="font-medium">contact@taxfinalizevn.com</div>
                       </div>
                     </a>
 

@@ -112,7 +112,7 @@ Update in `.env`:
 ```
 NEXT_PUBLIC_ZALO_NUMBER=+84703027485
 NEXT_PUBLIC_ZALO_LINK=https://zalo.me/84703027485
-NEXT_PUBLIC_EMAIL=contact@taxfinalization.com
+NEXT_PUBLIC_EMAIL=contact@taxfinalizevn.com
 ```
 
 ## 📊 Performance

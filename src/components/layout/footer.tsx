@@ -69,9 +69,9 @@ const Footer = memo(function Footer() {
             
             {/* Contact Info */}
             <div className="space-y-2">
-              <a href="mailto:contact@taxfinalization.com" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors">
+              <a href="mailto:contact@taxfinalizevn.com" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <Mail className="w-4 h-4" />
-                contact@taxfinalization.com
+                contact@taxfinalizevn.com
               </a>
               <a href="https://zalo.me/84703027485" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-primary-foreground/70 hover:text-primary-foreground transition-colors">
                 <Phone className="w-4 h-4" />

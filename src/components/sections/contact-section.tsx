@@ -215,13 +215,13 @@ export function ContactSection() {
                 </div>
 
                 <div className="space-y-4">
-                  <a href="mailto:contact@taxfinalization.com" className="flex items-center gap-3 text-sm hover:opacity-80 transition-opacity">
+                  <a href="mailto:contact@taxfinalizevn.com" className="flex items-center gap-3 text-sm hover:opacity-80 transition-opacity">
                     <div className="w-10 h-10 rounded-lg bg-primary-foreground/10 flex items-center justify-center">
                       <Mail className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="font-medium">Email</p>
-                      <p className="text-primary-foreground/70">contact@taxfinalization.com</p>
+                      <p className="text-primary-foreground/70">contact@taxfinalizevn.com</p>
                     </div>
                   </a>
 

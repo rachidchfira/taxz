@@ -20,7 +20,7 @@ export const SITE_KEYWORDS = [
 ]
 
 export const CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_EMAIL || 'contact@taxfinalization.com'
+  process.env.NEXT_PUBLIC_EMAIL || 'contact@taxfinalizevn.com'
 
 export const ZALO_NUMBER =
   process.env.NEXT_PUBLIC_ZALO_NUMBER || '+84703027485'

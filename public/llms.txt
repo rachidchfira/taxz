@@ -5,7 +5,7 @@ TaxFinalization is a Vietnam Personal Income Tax (PIT) service for foreigners, e
 Canonical site: https://www.taxfinalization.com
 Primary language: English
 Service area: Vietnam, especially Ho Chi Minh City and Hanoi
-Contact: contact@taxfinalization.com
+Contact: contact@taxfinalizevn.com
 ZALO: +84703027485
 
 ## What the site is about
