@@ -5,10 +5,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import {
   ArrowUp,
   Bot,
-  Calculator,
   MessageCircle,
-  ShieldCheck,
-  Sparkles,
   X,
 } from 'lucide-react'
 
@@ -33,7 +30,7 @@ type ChatMessage = {
 const WELCOME_MESSAGE: ChatMessage = {
   id: 'welcome',
   role: 'assistant',
-  text: "Hi! I'm the TaxFinalization AI assistant. I can help with Vietnam PIT finalization, refunds, residency, pricing, and the documents you may need. What would you like to know?",
+  text: 'Hi! Ask me about Vietnam PIT finalization, refunds, residency, pricing, or required documents.',
 }
 
 const QUICK_QUESTIONS = [
@@ -158,33 +155,23 @@ export function ChatWidget() {
       <DialogTrigger asChild>
         <Button
           type="button"
-          className="fixed z-40 ml-auto h-13 items-center gap-2 rounded-full bg-gradient-to-br from-[#4169E1] via-[#2854B8] to-[#0F766E] px-3 text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:shadow-xl focus-visible:ring-[#40E0D0]/40 active:translate-y-0 sm:px-4"
+          size="icon"
+          className="fixed z-40 size-12 rounded-full bg-[#1E3A8A] p-0 text-white shadow-lg transition duration-200 hover:-translate-y-0.5 hover:bg-[#2349A8] hover:shadow-xl focus-visible:ring-[#40E0D0]/40 active:translate-y-0"
           style={{
             bottom: 'calc(env(safe-area-inset-bottom) + 1rem)',
             right: 'calc(env(safe-area-inset-right) + 0.75rem)',
           }}
-          aria-label={isOpen ? 'Close AI tax assistant' : 'Open AI tax assistant'}
+          aria-label={
+            isOpen
+              ? 'Close Tax Finalization AI Agent'
+              : 'Open Tax Finalization AI Agent'
+          }
         >
-          <span className="relative flex size-8 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/20 transition group-hover:bg-white/20">
-            {isOpen ? (
-              <X className="size-4" aria-hidden="true" />
-            ) : (
-              <MessageCircle className="size-4" aria-hidden="true" />
-            )}
-            {!isOpen && (
-              <span className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-[#40E0D0] ring-2 ring-[#2854B8]" />
-            )}
-          </span>
-          <span className="hidden pr-0.5 text-left sm:block">
-            <span className="block text-xs font-semibold leading-none">
-              {isOpen ? 'Close chat' : 'Ask our AI'}
-            </span>
-            {!isOpen && (
-              <span className="mt-1 block text-[9px] leading-none text-white/70">
-                Vietnam PIT help
-              </span>
-            )}
-          </span>
+          {isOpen ? (
+            <X className="size-5" aria-hidden="true" />
+          ) : (
+            <MessageCircle className="size-5" aria-hidden="true" />
+          )}
         </Button>
       </DialogTrigger>
 
@@ -196,63 +183,38 @@ export function ChatWidget() {
             inputRef.current?.focus()
           }}
           className={cn(
-            'fixed z-50 flex h-[min(480px,calc(100dvh-96px))] w-[calc(100vw-24px)] max-w-[340px] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-white/20 bg-background shadow-2xl outline-none duration-200 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-bottom-4 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
+            'fixed z-50 flex h-[min(400px,calc(100dvh-88px))] w-[calc(100vw-24px)] max-w-[320px] origin-bottom-right flex-col overflow-hidden rounded-xl border border-border bg-background shadow-xl outline-none duration-200 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-bottom-4 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95',
             'print:hidden'
           )}
           style={{
-            bottom: 'calc(env(safe-area-inset-bottom) + 4.5rem)',
+            bottom: 'calc(env(safe-area-inset-bottom) + 4.25rem)',
             right: 'calc(env(safe-area-inset-right) + 0.75rem)',
           }}
         >
-          <header className="relative overflow-hidden bg-gradient-to-br from-[#1E3A8A] via-[#2349A8] to-[#0F766E] px-4 py-3.5 text-white">
-            <div className="pointer-events-none absolute -top-16 -right-12 size-40 rounded-full bg-[#40E0D0]/20 blur-2xl" />
-            <div className="pointer-events-none absolute -bottom-16 left-8 size-36 rounded-full bg-white/10 blur-2xl" />
+          <header className="flex h-11 shrink-0 items-center gap-2 bg-[#1E3A8A] px-3 text-white">
+            <Bot className="size-4 shrink-0 text-[#40E0D0]" aria-hidden="true" />
+            <DialogTitle className="min-w-0 flex-1 truncate text-balance text-sm font-semibold text-white">
+              Tax Finalization AI Agent
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Ask questions about Vietnam personal income tax.
+            </DialogDescription>
 
-            <div className="relative flex items-start gap-2.5">
-              <div className="relative flex size-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/15 shadow-inner">
-                <Calculator className="size-4" aria-hidden="true" />
-                <span className="absolute -top-1 -right-1 flex size-4 items-center justify-center rounded-full bg-[#40E0D0] ring-2 ring-[#2349A8]">
-                  <Sparkles className="size-2.5 text-[#0F3B55]" aria-hidden="true" />
-                </span>
-              </div>
-
-              <div className="min-w-0 flex-1 pt-0.5">
-                <div className="flex items-center gap-2">
-                  <DialogTitle className="truncate text-balance text-sm font-semibold text-white">
-                    TaxFinalization AI
-                  </DialogTitle>
-                  <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-white/90">
-                    Beta
-                  </span>
-                </div>
-                <DialogDescription className="mt-0.5 text-pretty text-xs text-white/75">
-                  Vietnam PIT guidance for expats
-                </DialogDescription>
-              </div>
-
-              <DialogPrimitive.Close asChild>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 shrink-0 rounded-lg text-white/75 hover:bg-white/15 hover:text-white"
-                  aria-label="Close chat"
-                >
-                  <X className="size-4" aria-hidden="true" />
-                </Button>
-              </DialogPrimitive.Close>
-            </div>
-
-            <div className="relative mt-2.5 flex items-center gap-2 text-[10px] text-white/80">
-              <span className="flex items-center gap-1.5 rounded-full bg-black/10 px-2.5 py-1">
-                <ShieldCheck className="size-3.5 text-[#7FFFD4]" aria-hidden="true" />
-                General tax information
-              </span>
-            </div>
+            <DialogPrimitive.Close asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-7 shrink-0 rounded-md text-white/75 hover:bg-white/15 hover:text-white"
+                aria-label="Close chat"
+              >
+                <X className="size-4" aria-hidden="true" />
+              </Button>
+            </DialogPrimitive.Close>
           </header>
 
           <div
-            className="flex-1 space-y-3 overflow-y-auto bg-gradient-to-b from-slate-50 to-white px-3 py-3.5 dark:from-slate-950 dark:to-background"
+            className="flex-1 space-y-2.5 overflow-y-auto bg-slate-50 p-2.5 dark:bg-slate-950"
             role="log"
             aria-live="polite"
             aria-relevant="additions"
@@ -265,15 +227,9 @@ export function ChatWidget() {
                   message.role === 'user' ? 'justify-end' : 'justify-start'
                 )}
               >
-                {message.role === 'assistant' && (
-                  <div className="mb-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#1E3A8A]/10 text-[#1E3A8A] dark:bg-[#40E0D0]/10 dark:text-[#40E0D0]">
-                    <Bot className="size-3" aria-hidden="true" />
-                  </div>
-                )}
-
                 <div
                   className={cn(
-                    'max-w-[85%] whitespace-pre-wrap rounded-2xl px-3 py-2 text-xs leading-relaxed shadow-sm',
+                    'max-w-[90%] whitespace-pre-wrap rounded-xl px-2.5 py-2 text-[11px] leading-relaxed shadow-sm',
                     message.role === 'user'
                       ? 'rounded-br-md bg-gradient-to-br from-[#1E3A8A] to-[#2854B8] text-white'
                       : message.error
@@ -287,11 +243,11 @@ export function ChatWidget() {
             ))}
 
             {messages.length === 1 && (
-              <div className="pl-8">
+              <div>
                 <p className="mb-1.5 text-[9px] font-semibold uppercase text-muted-foreground">
                   Popular questions
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1.5">
                   {QUICK_QUESTIONS.map((question) => (
                     <Button
                       key={question}
@@ -299,7 +255,7 @@ export function ChatWidget() {
                       variant="outline"
                       size="sm"
                       onClick={() => void sendMessage(question)}
-                      className="h-auto rounded-full border-[#1E3A8A]/15 bg-white px-2.5 py-1 text-left text-[10px] font-medium text-[#1E3A8A] shadow-sm transition hover:border-[#40E0D0] hover:bg-white dark:border-white/10 dark:bg-slate-900 dark:text-[#7FFFD4]"
+                      className="h-auto rounded-full border-[#1E3A8A]/15 bg-white px-2.5 py-1 text-left text-[9px] font-medium text-[#1E3A8A] shadow-sm transition hover:border-[#40E0D0] hover:bg-white dark:border-white/10 dark:bg-slate-900 dark:text-[#7FFFD4]"
                     >
                       {question}
                     </Button>
@@ -310,9 +266,6 @@ export function ChatWidget() {
 
             {isSending && (
               <div className="flex items-end gap-2" aria-label="Assistant is typing">
-                <div className="mb-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-[#1E3A8A]/10 text-[#1E3A8A] dark:bg-[#40E0D0]/10 dark:text-[#40E0D0]">
-                  <Bot className="size-3" aria-hidden="true" />
-                </div>
                 <div className="flex h-8 items-center gap-1 rounded-2xl rounded-bl-md border border-slate-200/80 bg-white px-3 shadow-sm dark:border-white/10 dark:bg-slate-900">
                   {[0, 1, 2].map((dot) => (
                     <span
@@ -328,7 +281,7 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="border-t border-border/70 bg-background p-2.5">
+          <div className="border-t border-border/70 bg-background p-2">
             <form
               onSubmit={(event) => {
                 event.preventDefault()
@@ -366,7 +319,7 @@ export function ChatWidget() {
                 <ArrowUp className="size-4" aria-hidden="true" />
               </Button>
             </form>
-            <p className="mt-1.5 text-center text-[8px] leading-tight text-muted-foreground">
+            <p className="mt-1 text-center text-[7px] leading-tight text-muted-foreground">
               AI can make mistakes. Do not share sensitive personal or tax data.
             </p>
           </div>
