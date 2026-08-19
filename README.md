@@ -44,6 +44,7 @@ A professional website for Personal Income Tax (PIT) finalization services in Vi
    - `DATABASE_URL`: Your database connection string
    - `NEXT_PUBLIC_SITE_URL`: https://www.taxfinalization.com
    - `NEXT_PUBLIC_ZALO_NUMBER`: +84703027485
+   - `N8N_CHAT_WEBHOOK_URL`: Optional override for the n8n chatbot webhook endpoint
 
 4. **Deploy**
    - Click "Deploy"
@@ -113,6 +114,7 @@ Update in `.env`:
 NEXT_PUBLIC_ZALO_NUMBER=+84703027485
 NEXT_PUBLIC_ZALO_LINK=https://zalo.me/84703027485
 NEXT_PUBLIC_EMAIL=contact@taxfinalizevn.com
+N8N_CHAT_WEBHOOK_URL=https://your-n8n-instance.example/webhook/taxfinalization-chat
 ```
 
 ## 📊 Performance

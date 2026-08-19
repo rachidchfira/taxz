@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "next-themes";
+import { ChatWidget } from "@/components/chat/chat-widget";
 import {
   SITE_DESCRIPTION,
   SITE_KEYWORDS,
@@ -96,6 +97,7 @@ export default function RootLayout({
             dangerouslySetInnerHTML={jsonLd(baseStructuredData())}
           />
           {children}
+          <ChatWidget />
           <Toaster />
         </ThemeProvider>
       </body>
